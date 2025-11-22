@@ -1,8 +1,7 @@
 /* ******************************************
- * This server.js file is the primary file of the 
+ * This server.js file is the primary file of the
  * application. It is used to control the project.
  *******************************************/
-
 /* ***********************
  * Require Statements
  *************************/
@@ -11,21 +10,44 @@ const expressLayouts = require("express-ejs-layouts")
 const env = require("dotenv").config()
 const app = express()
 const static = require("./routes/static")
+const baseController = require("./controllers/baseController")
+const pool = require('./database')
+const inventoryRoute = require("./routes/inventoryRoute")
+// const errorRoute = require("./routes/errorRoute")
+const utilities = require("./utilities/")
+// const errorHandler = require("./middleware/errorHandler")
 
 /* ***********************
  * View Engine and Templates
  *************************/
-app.set("view engine", "ejs")
-app.use(expressLayouts)
-app.set("layout", "./layouts/layout") // not at views root
-
+app.set('view engine', 'ejs');
+app.use(expressLayouts);
+app.set('layout', './layouts/layout'); // not at views root
 
 /* ***********************
  * Routes
  *************************/
 app.use(static)
+
 // Index route
-app.get("/", function(req, res){res.render("index", {title: "HOME"})})
+app.get("/", baseController.buildHome)
+
+// Inventory routes - comment out until file exists
+app.use("/inv", inventoryRoute)
+
+// Error routes - comment out until file exists
+// app.use("/error", errorRoute)
+
+// 404 Error Handler - File Not Found
+app.use(async (req, res, next) => {
+  next({status: 404, message: 'Sorry, we appear to have lost that page.'})
+})
+
+/* ***********************
+* Express Error Handler
+* Place after all other middleware
+*************************/
+// app.use(errorHandler)
 
 /* ***********************
  * Local Server Information

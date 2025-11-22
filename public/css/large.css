@@ -1,15 +1,11 @@
 @media screen and (min-width: 1000px) {
   body {
+    /* background-image: url('/images/site/checkerboard.jpg'); */
     background-image: url('/images/site/small_check.jpg');
     background-size: cover;
     background-position: center;
     background-repeat: repeat;
   }
-
-  html, body {
-    height: 100%;
-  }
-  
 
   #wrapper {
     background-color: white;
@@ -23,7 +19,7 @@
 
   main {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1fr ;
   }
 
   #hero-section {
@@ -34,7 +30,7 @@
     grid-column: 1/2;
     grid-row: 2/3;
   }
-
+  
   #reviews-section {
     grid-column: 2/3;
     grid-row: 2/3;
