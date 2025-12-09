@@ -2,24 +2,24 @@ const {
   createClassification,
   createInventory,
   getInventoryByClassificationId,
-  getVehicleById,
+  getDetailsByInventoryId,
+  getClassifications,
   updateInventory,
   deleteInventoryById,
   createReview,
-  getClassifications,
 } = require("../models/inventory-model");
 
 const {
-  getNav,  // ✅ Changed from buildNav
+  getNav,
   buildClassificationGrid,
-  buildVehicleDetail,
+  buildInventoryGrid,
 } = require("../utilities");
 
 /* ---------------- VIEW BUILDERS ---------------- */
 const buildByClassificationId = async (req, res) => {
   const classificationId = req.params.clasId;
   const { grid, title } = await buildClassificationGrid(classificationId);
-  const nav = await getNav(await getClassifications());  // ✅ Changed
+  const nav = await getNav();
 
   if (!grid) {
     req.flash("notice", "No vehicles found.");
@@ -31,30 +31,26 @@ const buildByClassificationId = async (req, res) => {
 
 const buildByInventoryId = async (req, res) => {
   const invId = req.params.invId;
-  const vehicle = await getVehicleById(invId);
+  const { grid, title, nav } = await buildInventoryGrid(invId);
 
-  if (!vehicle) {
+  if (!grid) {
     req.flash("notice", "Vehicle not found.");
     return res.redirect("/");
   }
-
-  const grid = buildVehicleDetail(vehicle);
-  const nav = await getNav(await getClassifications());  // ✅ Changed
-  const title = `${vehicle.inv_make} ${vehicle.inv_model}`;
 
   res.render("./inventory/inventory", { title, nav, grid, errors: null });
 };
 
 /* ---------------- ADD CLASSIFICATION ---------------- */
 const buildAddClass = async (req, res) => {
-  const nav = await getNav(await getClassifications());  // ✅ Changed
+  const nav = await getNav();
   res.render("./inventory/add-classification", { title: "Add Classification", nav, errors: null });
 };
 
 const addClassification = async (req, res) => {
   const { classification_name } = req.body;
   const result = await createClassification(classification_name);
-  const nav = await getNav(await getClassifications());  // ✅ Changed
+  const nav = await getNav();
 
   if (!result) {
     req.flash("notice", "Failed to add classification.");
@@ -67,7 +63,7 @@ const addClassification = async (req, res) => {
 
 /* ---------------- ADD INVENTORY ---------------- */
 const buildAddInventory = async (req, res) => {
-  const nav = await getNav(await getClassifications());  // ✅ Changed
+  const nav = await getNav();
   res.render("./inventory/add-update-inventory", {
     title: "Add Inventory",
     nav,
@@ -94,14 +90,14 @@ const addInventory = async (req, res) => {
 /* ---------------- EDIT INVENTORY ---------------- */
 const buildEditInventory = async (req, res) => {
   const invId = req.params.invId;
-  const vehicle = await getVehicleById(invId);
+  const vehicle = await getDetailsByInventoryId(invId);
 
   if (!vehicle) {
     req.flash("notice", "Vehicle not found.");
     return res.redirect("/inv");
   }
 
-  const nav = await getNav(await getClassifications());  // ✅ Changed
+  const nav = await getNav();
 
   res.render("./inventory/add-update-inventory", {
     title: "Edit Vehicle",
@@ -130,14 +126,14 @@ const editInventory = async (req, res) => {
 /* ---------------- DELETE INVENTORY ---------------- */
 const buildDeleteByInventoryId = async (req, res) => {
   const invId = req.params.invId;
-  const vehicle = await getVehicleById(invId);
+  const vehicle = await getDetailsByInventoryId(invId);
 
   if (!vehicle) {
     req.flash("notice", "Vehicle not found.");
     return res.redirect("/inv");
   }
 
-  const nav = await getNav(await getClassifications());  // ✅ Changed
+  const nav = await getNav();
   const title = `Delete ${vehicle.inv_make} ${vehicle.inv_model}`;
 
   res.render("./inventory/delete-confirm", { title, nav, vehicle, invId, errors: null });
