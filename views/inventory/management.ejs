@@ -1,0 +1,26 @@
+<% if (title) { %>
+<h1><%= title %></h1>
+<% } else { res.redirect('/') } %> <%- messages() %>
+<%- grid %>
+<section class="management">
+  <h2>Manage Inventory</h2>
+  <div>
+    <p>Choose a classification to see those inventory items</p>
+    <select
+      name="clas_id"
+      id="clasId"
+    >
+      <option
+        value=""
+        disabled
+        <%= typeof clas_id !== 'undefined' ? "" : "selected" %>
+      >
+        Choose a Classification
+      </option>
+      <%- clasOptions %>
+    </select>
+  </div>
+  <table id="inventoryDisplay"></table>
+</section>
+<noscript>JavaScript must be enabled to use this page</noscript>
+<script src="/js/inventory.js"></script>

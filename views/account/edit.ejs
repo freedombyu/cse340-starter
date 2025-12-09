@@ -1,0 +1,97 @@
+<!-- Display H1 view title -->
+<% if (title) { %>
+<h1><%= title %></h1>
+<% } else { res.redirect('/') } %>
+
+<!-- Display Messages if any -->
+<%- messages() %>
+
+<!-- Grid Data -->
+<section class="edit-data">
+  <h3>Account Data</h3>
+  <!-- Display Errors if any -->
+  <% if (dataErrors) { %>
+  <ul class="notice error">
+    <% dataErrors.array().forEach(error => { %>
+    <li><%= error.msg %></li>
+    <% }) %>
+  </ul>
+  <% } %>
+  <form class="form" action="/account/edit/data" method="post">
+    <fieldset>
+      <label
+        >First Name<span class="required">*</span>
+        <input
+          type="text"
+          name="acc_firstname"
+          id="firstname"
+          required
+          autocomplete
+          value="<%= locals?.accountData?.acc_firstname %>"
+        />
+      </label>
+      <label
+        >Last Name<span class="required">*</span>
+        <input
+          type="text"
+          name="acc_lastname"
+          id="lastname"
+          required
+          autocomplete
+          value="<%= locals?.accountData?.acc_lastname %>"
+        />
+      </label>
+      <label
+        >Email<span class="required">*</span>
+        <input
+          type="email"
+          name="acc_email"
+          id="email"
+          required
+          autocomplete
+          value="<%= locals?.accountData?.acc_email %>"
+        />
+      </label>
+    </fieldset>
+    <fieldset class="submit-btn-container">
+      <input type="submit" role="button" value="Update Account" />
+    </fieldset>
+  </form>
+</section>
+<section class="update-password">
+  <h3>Update Password</h3>
+  <form class="form" action="/account/edit/password" method="post">
+    <!-- Display Errors if any -->
+    <% if (passwordErrors) { %>
+    <ul class="notice error">
+      <% passwordErrors.array().forEach(error => { %>
+      <li><%= error.msg %></li>
+      <% }) %>
+    </ul>
+    <% } %>
+    <fieldset>
+      <label id="password-field" for="acc_password"
+        ><span>Password</span> <span class="required">*</span>
+        <input
+          type="password"
+          name="acc_password"
+          id="password"
+          required
+          pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{12,}$"
+        />
+        <img
+          src="/images/site/eye-close.png"
+          alt="eye close icon"
+          id="eye-icon"
+        />
+        <span>
+          Passwords must be at least 12 characters and contain at least 1
+          number, 1 capital letter and 1 special character
+        </span>
+      </label>
+    </fieldset>
+    <fieldset class="submit-btn-container">
+      <input type="submit" role="button" value="Update Password" />
+    </fieldset>
+  </form>
+</section>

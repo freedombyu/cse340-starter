@@ -1,117 +1,219 @@
-const invModel = require("../models/inventory-model")
+require('dotenv').config();
+const jwt = require('jsonwebtoken');
+const {
+  getClassifications,
+  getInventoryByClassificationId,
+  getDetailsByInventoryId,
+  getClassificationById,
+  getReviewsByInventoryId,
+} = require('../models/inventory-model');
+const {
+  gridInventoryDetailsTemplate,
+  gridTemplate,
+  navTemplate,
+  gridManagementTemplate,
+  noVehiclesTemplate,
+  clasOptionsTemplate,
+  accountGridTemplate,
+} = require('../templates');
 
-/* ************************
- * Constructs the nav HTML
- ************************** */
-async function getNav() {
-  let data = await invModel.getClassifications()
-  let list = '<ul class="navigation">'
-  list += '<li><a href="/" title="Home page">Home</a></li>'
-  data.rows.forEach((row) => {
-    list += '<li>'
-    list +=
-      '<a href="/inv/type/' +
-      row.classification_id +
-      '" title="See our inventory of ' +
-      row.classification_name +
-      ' vehicles">' +
-      row.classification_name +
-      '</a>'
-    list += '</li>'
-  })
-  list += '</ul>'
-  return list
-}
+const getNav = async (req, res, next) => {
+  const data = await getClassifications();
+  return navTemplate(data);
+};
 
-/* **************************************
-* Build the classification view HTML
-* ************************************ */
-async function buildClassificationGrid(data) {
-  let grid
-  if (data.length > 0) {
-    grid = '<ul id="inv-display">'
-    data.forEach(vehicle => { 
-      grid += '<li>'
-      grid += '<a href="/inv/detail/' + vehicle.inv_id 
-        + '" title="View ' + vehicle.inv_make + ' ' + vehicle.inv_model 
-        + ' details"><img src="' + vehicle.inv_thumbnail 
-        + '" alt="Image of ' + vehicle.inv_make + ' ' + vehicle.inv_model 
-        + ' on CSE Motors"></a>'
-      grid += '<div class="namePrice">'
-      grid += '<hr>'
-      grid += '<h2>'
-      grid += '<a href="/inv/detail/' + vehicle.inv_id + '" title="View ' 
-        + vehicle.inv_make + ' ' + vehicle.inv_model + ' details">' 
-        + vehicle.inv_make + ' ' + vehicle.inv_model + '</a>'
-      grid += '</h2>'
-      grid += '<span>$' + new Intl.NumberFormat('en-US').format(vehicle.inv_price) + '</span>'
-      grid += '</div>'
-      grid += '</li>'
-    })
-    grid += '</ul>'
-  } else { 
-    grid = '<p class="notice">Sorry, no matching vehicles could be found.</p>'
+const getClasOptions = async (clas_id) => {
+  const data = await getClassifications();
+  return clasOptionsTemplate(data, clas_id);
+};
+
+const buildClassificationGrid = async (clasId) => {
+  const inventory = await getInventoryByClassificationId(clasId);
+  if (inventory.length > 0) {
+    const title = `${inventory[0].clas_name} Vehicles`;
+    return {
+      grid: gridTemplate(inventory),
+      title,
+    };
+  } else {
+    const clasName = await getClassificationById(clasId);
+    return {
+      grid: noVehiclesTemplate,
+      title: `${clasName} Vehicles`,
+    };
   }
-  return grid
-}
+};
 
-/* **************************************
-* Build the vehicle detail view HTML
-* ************************************ */
-async function buildVehicleDetailHtml(vehicle) {
-  if (!vehicle) {
-    return '<p class="notice">Vehicle not found.</p>'
-  }
+const buildInventoryGrid = async (invId) => {
+  const inventoryDetail = await getDetailsByInventoryId(invId);
+  const inventoryReviews = await getReviewsByInventoryId(invId);
+  const nav = await getNav();
+  return {
+    grid: gridInventoryDetailsTemplate(inventoryDetail, inventoryReviews),
+    title: `${inventoryDetail.inv_year} ${inventoryDetail.inv_make} ${inventoryDetail.inv_model}`,
+    nav,
+  };
+};
 
-  const formattedPrice = new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD'
-  }).format(vehicle.inv_price)
+const buildManagementGrid = async () => {
+  const nav = await getNav();
+  const clasOptions = await getClasOptions();
+  return {
+    title: `Vehicle Management`,
+    nav,
+    grid: gridManagementTemplate(),
+    clasOptions,
+  };
+};
 
-  const formattedMiles = new Intl.NumberFormat('en-US').format(vehicle.inv_miles)
+const buildAddClassGrid = async () => {
+  const nav = await getNav();
+  return {
+    title: `Add Classification`,
+    nav,
+  };
+};
 
-  let html = `
-    <div class="vehicle-detail">
-      <section class="vehicle-image">
-        <img src="${vehicle.inv_image}" alt="Image of ${vehicle.inv_make} ${vehicle.inv_model}">
-      </section>
-      
-      <section class="vehicle-info">
-        <h2>${vehicle.inv_make} ${vehicle.inv_model} Details</h2>
-        
-        <div class="vehicle-specs">
-          <p class="price"><span>Price:</span> ${formattedPrice}</p>
-          <p><span>Year:</span> ${vehicle.inv_year}</p>
-          <p><span>Make:</span> ${vehicle.inv_make}</p>
-          <p><span>Model:</span> ${vehicle.inv_model}</p>
-          <p><span>Mileage:</span> ${formattedMiles}</p>
-          <p><span>Color:</span> ${vehicle.inv_color}</p>
-        </div>
-        
-        <div class="vehicle-description">
-          <h3>Description</h3>
-          <p>${vehicle.inv_description}</p>
-        </div>
-      </section>
-    </div>
-  `
-  return html
-}
+const buildAddEditInvGrid = async (type = 'Add', clas_id) => {
+  const nav = await getNav();
+  const clasOptions = await getClasOptions(clas_id);
+  formData = {};
+  const formAction = type === 'Edit' ? '/inv/edit' : '/inv/inventory';
+  return {
+    title: `${type} Vehicle`,
+    nav,
+    clasOptions,
+    formData,
+    formAction,
+  };
+};
+
+const buildDeleteInventoryGrid = async (invId) => {
+  const inventoryDetail = await getDetailsByInventoryId(invId);
+  return {
+    grid: gridInventoryDetailsTemplate(inventoryDetail),
+    title: `Delete Confirmation - ${inventoryDetail.inv_year} ${inventoryDetail.inv_make} ${inventoryDetail.inv_model}`,
+    deleteMessage:
+      'Are you sure you want to delete this vehicle? Delete is permanent and cannot be undone!',
+  };
+};
+
+const buildLoginGrid = async () => {
+  const nav = await getNav();
+  const title = `Login`;
+  const acc_email = '';
+  return {
+    title,
+    nav,
+    acc_email,
+  };
+};
+
+const buildSignupGrid = async () => {
+  const nav = await getNav();
+  const title = `Signup`;
+  const formData = { acc_firstname: '', acc_lastname: '', acc_email: '' };
+  return {
+    title,
+    nav,
+    formData,
+  };
+};
+
+const buildAccountGrid = async () => {
+  const nav = await getNav();
+  const title = `Account Management`;
+  return {
+    grid: accountGridTemplate(),
+    title,
+    nav,
+  };
+};
+
+const buildEditAccountGrid = async () => {
+  const nav = await getNav();
+  const title = `Update Account`;
+  return {
+    title,
+    nav,
+  };
+};
 
 /* ****************************************
  * Middleware For Handling Errors
- * Wrap other function in this for 
+ * Wrap other function in this for
  * General Error Handling
  **************************************** */
-function handleErrors(fn) {
-  return function (req, res, next) {
-    Promise.resolve(fn(req, res, next)).catch(next)
+const handleErrors = (fn) => (req, res, next) =>
+  Promise.resolve(fn(req, res, next)).catch(next);
+
+/* ****************************************
+ * Middleware to check token validity
+ **************************************** */
+const checkJWTToken = (req, res, next) => {
+  if (req.cookies.jwt) {
+    jwt.verify(
+      req.cookies.jwt,
+      process.env.ACCESS_TOKEN_SECRET,
+      (err, accountData) => {
+        if (err) {
+          req.flash('Please log in');
+          res.clearCookie('jwt');
+          return res.redirect('/account/login');
+        }
+        req.user = accountData;
+        res.locals.accountData = accountData;
+        res.locals.loggedin = 1;
+        next();
+      }
+    );
+  } else {
+    next();
   }
-}
+};
+
+/* ****************************************
+ * Middleware to check Admin or Employee account type
+ **************************************** */
+const isEmployeeOrAdmin = (req, res, next) => {
+  if (req.cookies.jwt) {
+    jwt.verify(
+      req.cookies.jwt,
+      process.env.ACCESS_TOKEN_SECRET,
+      (err, accountData) => {
+        if (err) {
+          req.flash('Please log in');
+          res.clearCookie('jwt');
+          return res.redirect('/account/login');
+        }
+        const { acc_type } = accountData;
+        if (acc_type === 'Employee' || acc_type === 'Admin') {
+          next();
+        } else {
+          req.flash(
+            'notice',
+            'Access denied. Please login with allowed credentials.'
+          );
+          return res.redirect('/account/login');
+        }
+      }
+    );
+  }
+};
 
 module.exports = {
   getNav,
   buildClassificationGrid,
-  buildVehicleDetailHtml,
+  buildInventoryGrid,
   handleErrors,
-}
+  buildLoginGrid,
+  buildSignupGrid,
+  buildAccountGrid,
+  checkJWTToken,
+  buildManagementGrid,
+  buildAddClassGrid,
+  buildAddEditInvGrid,
+  buildDeleteInventoryGrid,
+  isEmployeeOrAdmin,
+  buildEditAccountGrid,
+};

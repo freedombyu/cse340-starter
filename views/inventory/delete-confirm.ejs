@@ -1,0 +1,19 @@
+<% if (title) { %>
+<h1><%= title %></h1>
+<% } else { res.redirect('/') } %> <%- messages() %>
+<div class="delete-details">
+  <p><%- deleteMessage %></p>
+  <div class="vehicle-card"><%- grid %></div>
+</div>
+<form id="delete-form" action="/inv/delete/<%- invId %>" method="post">
+  <fieldset class="submit-btn-container">
+    <a class="cancel-btn" href="/inv">Cancel</a>
+    <input
+      id="submit-btn"
+      class="delete"
+      type="submit"
+      role="button"
+      value="Delete"
+    />
+  </fieldset>
+</form>

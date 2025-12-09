@@ -1,0 +1,40 @@
+<% if (title) { %>
+<h1><%= title %></h1>
+<% } else { res.redirect('/') } %> <% if (errors) { %>
+<ul class="notice error">
+  <% errors.array().forEach(error => { %>
+  <li><%= error.msg %></li>
+  <% }) %>
+</ul>
+
+<% } %> <%- messages() %>
+<form class="form" action="/account/login" method="post">
+  <fieldset>
+    <label
+      >Email<span class="required">*</span>
+      <input
+        type="email"
+        name="acc_email"
+        id="email"
+        required
+        autocomplete
+        value="<%= acc_email %>"
+      />
+    </label>
+    <label id="password-field"
+      >Password<span class="required">*</span>
+      <input type="password" name="acc_password" id="password" required />
+      <img
+        src="/images/site/eye-close.png"
+        alt="eye close icon"
+        id="eye-icon"
+      />
+    </label>
+  </fieldset>
+  <fieldset class="submit-btn-container">
+    <input type="submit" role="button" value="Login" />
+  </fieldset>
+  <div>
+    <p>No account? <a href="/account/signup">Sign Up</a></p>
+  </div>
+</form>

@@ -1,0 +1,27 @@
+<% if (title) { %>
+<h1><%= title %></h1>
+<% } else { res.redirect('/') } %> <% if (errors) { %>
+<ul class="notice error">
+  <% errors.array().forEach(error => { %>
+  <li><%= error.msg %></li>
+  <% }) %>
+</ul>
+<% } %> <%- messages() %>
+<form class="form" action="/inv/classification" method="post">
+  <fieldset>
+    <label
+      >Classificaiton Name<span class="required">*</span>
+      <input
+        type="text"
+        name="clas_name"
+        value="<%= typeof clas_name !== 'undefined' ? clas_name : '' %>"
+        id="clasName"
+        required
+        pattern="^[a-zA-Z0-9]+$"
+      />
+    </label>
+  </fieldset>
+  <fieldset class="submit-btn-container">
+    <input type="submit" role="button" value="Add Classification" />
+  </fieldset>
+</form>

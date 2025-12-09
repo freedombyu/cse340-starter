@@ -1,0 +1,28 @@
+<!-- Display H1 view title -->
+<% if (title) { %>
+<h1><%= title %></h1>
+<% } else { res.redirect('/') } %>
+
+<!-- Display Errors if any -->
+<% if (errors) { %>
+<ul class="notice">
+  <% errors.array().forEach(error => { %>
+  <li><%= error.msg %></li>
+  <% }) %>
+</ul>
+<% } %>
+<!-- Display Messages if any -->
+<%- messages() %>
+<section class="account-management">
+  <h2>Welcome <%= locals.accountData.acc_firstname %></h2>
+  <div class="client"><%- grid %></div>
+
+  <!-- If Employee or Admin -->
+  <% if (locals.accountData.acc_type === 'Employee' ||
+  locals.accountData.acc_type === 'Admin') { %>
+  <div class="employee admin">
+    <h3>Inventory Management</h3>
+    <a href="/inv">Manage Inventory</a>
+  </div>
+  <% } %>
+</section>

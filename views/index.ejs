@@ -1,6 +1,8 @@
-<section id="hero-section">
+<div class="home">
+  <section id="hero-section">
     <div class="hero">
       <h1>Welcome to CSE Motors!</h1>
+      <%- messages() %>
       <picture>
         <source
           media="(min-width: 500px)"
@@ -10,7 +12,8 @@
           src="/images/vehicles/delorean-tn.jpg"
           alt="delorean"
           width="500"
-          height="300"/>
+          height="300"
+        />
       </picture>
       <div id="hero-card">
         <h2>DMC <span class="current-car"></span></h2>
@@ -18,7 +21,7 @@
         <img
           src="/images/site/own_today.png"
           alt="own today button"
-  width="150"
+          width="150"
           height="40"
         />
       </div>
@@ -32,3 +35,4 @@
     <h2><span class="current-car"></span> Upgrades</h2>
     <div id="upgrades-container"></div>
   </section>
+</div>
