@@ -1,5 +1,6 @@
 const { Router } = require('express');
 const { handleErrors } = require('../utilities');
+
 const {
   buildLogin,
   buildSignup,
@@ -11,6 +12,7 @@ const {
   editPassword,
   editAccountData,
 } = require('../controllers/accountController');
+
 const {
   signupRules,
   loginRules,
@@ -24,30 +26,39 @@ const {
 
 const accountRouter = new Router();
 
+/* ***************
+ * GET Routes
+ *****************/
 accountRouter.get('/', handleErrors(buildAccount));
 accountRouter.get('/login', handleErrors(buildLogin));
 accountRouter.get('/signup', handleErrors(buildSignup));
 accountRouter.get('/logout', handleErrors(logoutUser));
 accountRouter.get('/edit', handleErrors(buildEditAccount));
 
+/* ***************
+ * POST Routes
+ *****************/
 accountRouter.post(
   '/login',
   loginRules(),
   checkUserLoginData,
   handleErrors(loginUser)
 );
+
 accountRouter.post(
   '/signup',
   signupRules(),
   checkUserSignupData,
   handleErrors(signupUser)
 );
+
 accountRouter.post(
   '/edit/data',
   updateAccountRules(),
   checkUpdateAccountData,
   handleErrors(editAccountData)
 );
+
 accountRouter.post(
   '/edit/password',
   updatePasswordRules(),
