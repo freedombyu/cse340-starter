@@ -1,0 +1,161 @@
+/******* Change Box Model ***************/
+*,
+*:before,
+*:after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+nav ul,
+#hero-features {
+  list-style: none;
+}
+
+section {
+  padding: 1rem;
+}
+
+a {
+  text-decoration: none;
+  color: black;
+}
+
+.site-name {
+  font-size: 2rem;
+}
+
+#top-header {
+  display: flex;
+  flex-direction: row;
+  padding: 2rem;
+  justify-content: space-between;
+  align-items: center;
+}
+
+nav {
+  background-color: black;
+}
+
+nav a {
+  color: whitesmoke;
+}
+
+nav ul {
+  display: flex;
+  flex-direction: row;
+}
+
+nav ul li {
+  text-align: center;
+  flex-grow: 1;
+  display: flex;
+}
+
+nav ul li a {
+  padding: 0.7rem;
+  text-align: center;
+  flex-grow: 1;
+}
+
+nav ul li a:hover {
+  background-color: lightgray;
+  color: black;
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: 1fr;
+}
+
+.hero img {
+  width: 100%;
+  height: auto;
+}
+
+#hero-card {
+  background-color: rgba(255, 255, 255, 0.8);
+  width: fit-content;
+  height: fit-content;
+  padding: 0.5rem;
+  border-radius: 5px;
+  box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.8);
+  margin: 0 auto;
+  align-self: center;
+}
+
+#hero-card img {
+  border-color: transparent;
+  border-radius: 5px;
+  box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.8);
+  width: 60%;
+  height: auto;
+}
+
+#hero-card ul {
+  margin: 0.5rem 0;
+}
+
+#hero-card h2 {
+  text-align: center;
+}
+
+#hero-card,
+.hero picture {
+  grid-row: 2/3;
+  grid-column: 1/2;
+}
+
+/* Reviews */
+
+#reviews-section {
+  padding: 1rem 2rem;
+}
+
+#reviews-section ul {
+  margin-top: 1rem;
+}
+
+#reviews-section ul li {
+  margin-top: 1rem;
+  margin-left: 1rem;
+  font-size: 1.5rem;
+}
+
+/* Upgrades */
+
+#upgrades-section #upgrades-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  margin-top: 1rem;
+}
+
+#upgrades-container .card {
+  border: 1px solid lightgray;
+  margin: 0.5rem;
+  padding: 1rem;
+  border-radius: 5px;
+  box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.8);
+  cursor: pointer;
+}
+
+#upgrades-container .card img {
+  width: 80px;
+  height: auto;
+}
+
+#upgrades-container figure {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Footer */
+
+footer {
+  background-color: black;
+  color: whitesmoke;
+  padding: 1rem;
+  text-align: center;
+}
