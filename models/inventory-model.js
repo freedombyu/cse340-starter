@@ -1,20 +1,23 @@
 const pool = require('../database');
 
 const getClassifications = async () => {
-  return await pool.query('SELECT * FROM classification ORDER BY clas_name');
+  return await pool.query('SELECT * FROM classification ORDER BY classification_name');
 };
 
-const getInventoryByClassificationId = async (clasId) => {
+async function getInventoryByClassificationId(classification_id) {
   try {
-    const { rows } = await pool.query(
-      `SELECT * FROM inventory AS i JOIN classification AS c ON i.clas_id = c.clas_id WHERE i.clas_id = $1`,
-      [clasId]
-    );
-    return rows;
+    const data = await pool.query(
+      `SELECT * FROM inventory AS i 
+       JOIN classification AS c 
+       ON i.classification_id = c.classification_id 
+       WHERE i.classification_id = $1`,
+      [classification_id]
+    )
+    return data.rows
   } catch (error) {
-    console.log('getInventoryByClassificationId error', error);
+    console.error("getInventoryByClassificationId error " + error)
   }
-};
+}
 
 module.exports = {
   getClassifications,

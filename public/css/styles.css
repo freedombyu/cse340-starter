@@ -21,6 +21,14 @@ a {
   color: black;
 }
 
+h1 {
+  padding: 0 1rem;
+}
+
+p {
+  display: inline;
+}
+
 .site-name {
   font-size: 2rem;
 }
@@ -82,6 +90,9 @@ nav ul li a:hover {
   box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.8);
   margin: 0 auto;
   align-self: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 #hero-card img {
@@ -104,6 +115,73 @@ nav ul li a:hover {
 .hero picture {
   grid-row: 2/3;
   grid-column: 1/2;
+}
+
+/* Inventory */
+
+#inv-display {
+  display: grid;
+}
+
+#inv-display li {
+  margin: 1rem;
+  list-style: none;
+  border-radius: 5px;
+  border: 1px solid #d4d4d4;
+  display: flex;
+  flex-direction: column;
+}
+
+.name-price {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+  gap: 1rem;
+  flex-grow: 1;
+}
+
+#inv-display h2 {
+  text-align: center;
+}
+
+#inv-display a,
+#inv-display img {
+  width: 100%;
+  height: auto;
+}
+
+#inv-display li:hover {
+  box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.8);
+}
+
+/* Inventory Details */
+
+.inventory-details-wrapper {
+  display: grid;
+  grid-template-columns: 1fr;
+  padding: 1rem;
+  gap: 1rem;
+}
+
+.inventory-details-wrapper li {
+  list-style: none;
+  padding: 1rem;
+}
+
+.inventory-details-wrapper li:nth-child(odd) {
+  background-color: #eeeeee;
+}
+
+.inventory-details-wrapper > div,
+.inventory-details-wrapper img {
+  width: 100%;
+  height: auto;
+}
+
+.inventory-details-wrapper ul {
+  margin-top: 1rem;
 }
 
 /* Reviews */
@@ -151,6 +229,30 @@ nav ul li a:hover {
   justify-content: center;
 }
 
+/* Error */
+
+.error-page div {
+  margin: 2rem auto;
+  width: 80%;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+}
+
+.error-page img {
+  width: 100%;
+  height: auto;
+  margin-top: -3rem;
+}
+
+.error-page .code {
+  font-size: 6rem;
+}
+
+.error-page p {
+  font-size: 1.5rem;
+}
+
 /* Footer */
 
 footer {
@@ -158,4 +260,11 @@ footer {
   color: whitesmoke;
   padding: 1rem;
   text-align: center;
+  display: flex;
+  flex-direction: column;
+}
+
+footer a {
+  color: whitesmoke;
+  text-decoration: underline;
 }

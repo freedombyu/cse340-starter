@@ -4,7 +4,7 @@ const {
 } = require('../models/inventory-model');
 
 const navItemTemplate = (item) =>
-  `<li><a href="/inv/type/${item.classification_id}" title="See our inventory of ${item.classification_name} vehicles">${item.classification_name}</a></li>`;
+  `<li><a href="/inv/type/${item.clas_id}" title="See our inventory of ${item.clas_name} vehicles">${item.clas_name}</a></li>`;
 
 const navTemplate = (data) =>
   `<ul><li><a href="/" title="Home page">Home</a></li>${data.rows
@@ -36,17 +36,18 @@ const gridTemplate = (rows) =>
 
 const noVehiclesTemplate = `<p class="notice">Sorry, no matching vehicles could be found in this category.</p>`;
 
-const buildClassificationGrid = async (data) => {
-  if (data && data.length > 0) {
-    const title = `${data[0].classification_name} Vehicles`;
+const buildClassificationGrid = async (clasId) => {
+  const inventory = await getInventoryByClassificationId(clasId);
+  const title = `${inventory[0].clas_name} Vehicles`;
+  if (inventory.length > 0) {
     return {
-      grid: gridTemplate(data),
+      grid: gridTemplate(inventory),
       title,
     };
   } else {
     return {
       grid: noVehiclesTemplate,
-      title: 'No Vehicles Found',
+      title,
     };
   }
 };
