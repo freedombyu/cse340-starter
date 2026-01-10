@@ -7,6 +7,35 @@
   box-sizing: border-box;
 }
 
+/******* Font Definitions ***************/
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  color: #333;
+}
+
+h1 {
+  font-family: Georgia, 'Times New Roman', serif;
+  padding: 0 1rem;
+}
+
+h2, h3, h4, h5, h6 {
+  font-family: Georgia, 'Times New Roman', serif;
+}
+
+p {
+  font-family: Arial, Helvetica, sans-serif;
+  display: inline;
+}
+
+a {
+  text-decoration: none;
+  color: black;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/******* Navigation and Layout ***************/
 nav ul,
 #hero-features {
   list-style: none;
@@ -14,19 +43,6 @@ nav ul,
 
 section {
   padding: 1rem;
-}
-
-a {
-  text-decoration: none;
-  color: black;
-}
-
-h1 {
-  padding: 0 1rem;
-}
-
-p {
-  display: inline;
 }
 
 .site-name {
@@ -71,6 +87,7 @@ nav ul li a:hover {
   color: black;
 }
 
+/******* Hero Section ***************/
 .hero {
   display: grid;
   grid-template-columns: 1fr;
@@ -117,8 +134,7 @@ nav ul li a:hover {
   grid-column: 1/2;
 }
 
-/* Inventory */
-
+/******* Inventory ***************/
 #inv-display {
   display: grid;
 }
@@ -156,8 +172,7 @@ nav ul li a:hover {
   box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.8);
 }
 
-/* Inventory Details */
-
+/******* Inventory Details ***************/
 .inventory-details-wrapper {
   display: grid;
   grid-template-columns: 1fr;
@@ -184,8 +199,7 @@ nav ul li a:hover {
   margin-top: 1rem;
 }
 
-/* Reviews */
-
+/******* Reviews ***************/
 #reviews-section {
   padding: 1rem 2rem;
 }
@@ -200,8 +214,7 @@ nav ul li a:hover {
   font-size: 1.5rem;
 }
 
-/* Upgrades */
-
+/******* Upgrades ***************/
 #upgrades-section #upgrades-container {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -229,8 +242,7 @@ nav ul li a:hover {
   justify-content: center;
 }
 
-/* Error */
-
+/******* Error Page ***************/
 .error-page div {
   margin: 2rem auto;
   width: 80%;
@@ -253,8 +265,7 @@ nav ul li a:hover {
   font-size: 1.5rem;
 }
 
-/* Footer */
-
+/******* Footer ***************/
 footer {
   background-color: black;
   color: whitesmoke;
