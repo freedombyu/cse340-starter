@@ -247,7 +247,7 @@ SET inv_description = REPLACE(
     'small interiors',
     'huge interior'
   )
-WHERE inv_model = 'Hummer';
+WHERE inv_model = 'Hummer'; from 
 
 -- Update image paths (Query 6 from assignment2.sql)
 UPDATE inventory
