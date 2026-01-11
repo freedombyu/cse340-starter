@@ -1,5 +1,4 @@
 --Create client_type data
-DROP TYPE IF EXISTS public.account_type;
 CREATE TYPE public.account_type AS ENUM
     ('Client', 'Employee', 'Admin');
 
@@ -253,4 +252,4 @@ WHERE inv_model = 'Hummer';
 -- Update image paths (Query 6 from assignment2.sql)
 UPDATE inventory
 SET inv_image = REPLACE(inv_image, '/images/', '/images/vehicles/'),
-  inv_thumbnail = REPLACE(inv_thumbnail, '/images/', '/images/vehicles/')\
+  inv_thumbnail = REPLACE(inv_thumbnail, '/images/', '/images/vehicles/')
