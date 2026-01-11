@@ -1,9 +1,10 @@
---Create client_type data type
+--Create client_type data
+DROP TYPE IF EXISTS public.account_type;
 CREATE TYPE public.account_type AS ENUM
     ('Client', 'Employee', 'Admin');
 
 ALTER TYPE public.account_type
-    OWNER TO cse340start_db;
+    OWNER TO cse340startdb;
 
   -- Table structure for tavle 'classification'
 CREATE TABLE public.classification (
@@ -208,7 +209,7 @@ VALUES   (
     '1999',
     'Scooby and the gang always found luck in solving their mysteries because of there 4 wheel drive Mystery Machine. This Van will help you do whatever job you are required to with a success rate of 100%.',
     '/images/mystery-van.jpg',
-    '/images/mystery-van-tn.jpg',
+    '/images/mystery-van.jpg',
     10000,
     128564,
     'Green',
@@ -237,3 +238,19 @@ VALUES   (
     'White',
     5
   );
+
+-- *** ADD THESE UPDATE QUERIES AT THE END (Query 4 and Query 6 from assignment2.sql) ***
+
+-- Update Hummer description (Query 4 from assignment2.sql)
+UPDATE inventory
+SET inv_description = REPLACE(
+    inv_description,
+    'small interiors',
+    'huge interior'
+  )
+WHERE inv_model = 'Hummer';
+
+-- Update image paths (Query 6 from assignment2.sql)
+UPDATE inventory
+SET inv_image = REPLACE(inv_image, '/images/', '/images/vehicles/'),
+  inv_thumbnail = REPLACE(inv_thumbnail, '/images/', '/images/vehicles/')\
