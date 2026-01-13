@@ -1,66 +1,154 @@
-const {
-  getClassifications,
-  getInventoryByClassificationId,
-} = require('../models/inventory-model');
+const invModel = require("../models/inventory-model")
+const jwt = require("jsonwebtoken")
+require("dotenv").config()
 
-const navItemTemplate = (item) =>
-  `<li><a href="/inv/type/${item.classification_id}" title="See our inventory of ${item.classification_name} vehicles">${item.classification_name}</a></li>`;
+const Util = {}
 
-const navTemplate = (data) =>
-  `<ul><li><a href="/" title="Home page">Home</a></li>${data.rows
-    .map(navItemTemplate)
-    .join('')}</ul>`;
-
-const getNav = async (req, res, next) => {
-  const data = await getClassifications();
-  return navTemplate(data);
-};
-
-const gridItemTemplate = (vehicle) =>
-  `<li><a href="../../inv/detail/${vehicle.inv_id}" title="View ${
-    vehicle.inv_make
-  } ${vehicle.inv_model} details"><img src="${
-    vehicle.inv_thumbnail
-  }" alt="Image of ${vehicle.inv_make} ${
-    vehicle.inv_model
-  } on CSE Motors"></a><div class="name-price"><hr><h2><a href="../../inv/detail/${
-    vehicle.inv_id
-  }" title="View ${vehicle.inv_make} ${vehicle.inv_model} details">${
-    vehicle.inv_make
-  } ${vehicle.inv_model}</a></h2><span>$ ${new Intl.NumberFormat(
-    'en-US'
-  ).format(vehicle.inv_price)}</span></div></li>`;
-
-const gridTemplate = (rows) =>
-  `<ul id="inv-display">${rows.map(gridItemTemplate).join('')}</ul>`;
-
-const noVehiclesTemplate = `<p class="notice">Sorry, no matching vehicles could be found in this category.</p>`;
-
-const buildClassificationGrid = async (data) => {
-  if (data && data.length > 0) {
-    const title = `${data[0].classification_name} Vehicles`;
-    return {
-      grid: gridTemplate(data),
-      title,
-    };
+// Add this to utilities/index.js or a separate middleware file
+function checkLogin(req, res, next) {
+  if (req.session.loggedin) {
+    next()
   } else {
-    return {
-      grid: noVehiclesTemplate,
-      title: 'No Vehicles Found',
-    };
+    req.flash("notice", "Please log in.")
+    return res.redirect("/account/login")
   }
-};
+}
+
+/* ************************
+ * Constructs the nav HTML
+ ************************** */
+Util.getNav = async function (req, res, next) {
+  let data = await invModel.getClassifications()
+  let list = "<ul>"
+  list += '<li><a href="/" title="Home page">Home</a></li>'
+  data.rows.forEach((row) => {
+    list += "<li>"
+    list +=
+      '<a href="/inv/type/' +
+      row.classification_id +
+      '" title="See our ' +
+      row.classification_name +
+      ' inventory">' +
+      row.classification_name +
+      "</a>"
+    list += "</li>"
+  })
+  list += "</ul>"
+  return list
+}
 
 /* ****************************************
  * Middleware For Handling Errors
- * Wrap other function in this for
+ * Wrap other functions in this for 
  * General Error Handling
  **************************************** */
-const handleErrors = (fn) => (req, res, next) =>
-  Promise.resolve(fn(req, res, next)).catch(next);
+Util.handleErrors = fn => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next)
 
-module.exports = {
-  getNav,
-  buildClassificationGrid,
-  handleErrors,
+/* ************************
+ * Build the classification view HTML
+ ************************** */
+Util.buildClassificationGrid = async function (data) {
+  let grid
+  if (data.length > 0) {
+    grid = '<ul id="inv-display">'
+    data.forEach((vehicle) => {
+      grid += '<li class="vehicle-item">'
+      grid +=
+        '<a href="../../inv/detail/' +
+        vehicle.inv_id +
+        '" title="View ' +
+        vehicle.inv_make +
+        ' ' +
+        vehicle.inv_model +
+        ' details"><img src="' +
+        vehicle.inv_thumbnail +
+        '" alt="Image of ' +
+        vehicle.inv_make +
+        ' ' +
+        vehicle.inv_model +
+        ' on CSE Motors" /></a>'
+      grid += '<div class="namePrice">'
+      grid += '<hr />'
+      grid += '<h2>'
+      grid += '<a href="../../inv/detail/' + vehicle.inv_id +
+        '" title="View ' +
+        vehicle.inv_make +
+        ' ' +
+        vehicle.inv_model +
+        ' details">' +
+        vehicle.inv_make +
+        ' ' +
+        vehicle.inv_model +
+        '</a></h2>'
+      grid += '<span>$' +
+        new Intl.NumberFormat('en-US').format(vehicle.inv_price) +
+        '</span>'
+      grid += '</div>'
+      grid += '</li>'
+    })
+    grid += '</ul>'
+  } else {
+    grid = '<p class="notice">Sorry, no matching vehicles could be found.</p>'
+  }
+  return grid
+}
+
+/* ************************
+ * Build the vehicle detail view HTML
+ ************************** */
+Util.buildVehicleDisplay = async function (data) {
+  // Check if data exists and is not empty
+  if (!data || !Array.isArray(data) || data.length === 0) {
+    return '<p class="notice">Vehicle data not available.</p>';
+  }
+  
+  const vehicle = data[0];
+  
+  // Make sure required vehicle properties exist
+  if (!vehicle || !vehicle.inv_image) {
+    return '<p class="notice">Complete vehicle information not available.</p>';
+  }
+  
+  let display = '<div class="vehicle-detail">';
+  display += `<img src="${vehicle.inv_image}" alt="Image of ${vehicle.inv_make} ${vehicle.inv_model}">`;
+  display += '<div class="vehicle-info">';
+  display += `<h2>${vehicle.inv_make} ${vehicle.inv_model} Details</h2>`;
+  display += `<p class="vehicle-price">Price: $${new Intl.NumberFormat('en-US').format(vehicle.inv_price)}</p>`;
+  display += `<p><strong>Description:</strong> ${vehicle.inv_description}</p>`;
+  display += `<p><strong>Color:</strong> ${vehicle.inv_color}</p>`;
+  display += `<p><strong>Miles:</strong> ${new Intl.NumberFormat('en-US').format(vehicle.inv_miles)}</p>`;
+  display += '</div>';
+  display += '</div>';
+  
+  return display;
+}
+
+/* ************************
+ * Build the classification dropdown list HTML
+ ************************** */
+Util.buildClassificationList = async function (classification_id = null) {
+  let data = await invModel.getClassifications()
+  let classificationList =
+    '<select name="classification_id" id="classificationList" required>'
+  classificationList += "<option value=''>Choose a Classification</option>"
+  data.rows.forEach((row) => {
+    classificationList += '<option value="' + row.classification_id + '"'
+    if (
+      classification_id != null &&
+      row.classification_id == classification_id
+    ) {
+      classificationList += " selected "
+    }
+    classificationList += ">" + row.classification_name + "</option>"
+  })
+  classificationList += "</select>"
+  return classificationList
+}
+
+// In utilities/index.js or similar
+const handleLogout = (req, res) => {
+  res.clearCookie("jwt");
+  return res.redirect("/");
 };
+
+module.exports = Util

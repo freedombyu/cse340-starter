@@ -10,16 +10,19 @@ const express = require('express');
 const expressLayouts = require('express-ejs-layouts');
 const app = express();
 const static = require('./routes/static');
-const { buildHome } = require('./controllers/baseController');
 const inventoryRouter = require('./routes/inventoryRoute');
+const serverErrorRouter = require('./routes/serverErrorRouter');
+const { buildHome } = require('./controllers/baseController');
 const { getNav, handleErrors } = require('./utilities');
+const { gridErrorTemplate } = require('./templates');
 
 /* ***********************
  * View Engine and Templates
  *************************/
 app.set('view engine', 'ejs');
 app.use(expressLayouts);
-app.set('layout', './layouts/layout'); 
+app.set('layout', './layouts/layout'); // not at views root
+
 /* ***********************
  * Routes
  *************************/
@@ -29,13 +32,14 @@ app.use(static);
 app.get('/', handleErrors(buildHome));
 // Inventory Routes
 app.use('/inv', inventoryRouter);
+app.use('/error', serverErrorRouter);
 
 /* ***********************
  * Route Not Found
  * Must be keep after all other routes
  *************************/
 app.use(async (req, res, next) => {
-  next({ status: 404, message: "Sorry, it seems that page doesn't exists!" });
+  next({ status: 404, message: 'Not Found' });
 });
 
 /* ***********************
@@ -44,17 +48,27 @@ app.use(async (req, res, next) => {
  *************************/
 app.use(async (err, req, res, next) => {
   const nav = await getNav();
-  let message = '';
+  const title = `${err.message}` || 'Server Error';
+  const data = {
+    title,
+    statusCode: err.status,
+  };
   console.error(`Error at: "${req.originalUrl}": ${err.message}`);
   if (err.status === 404) {
-    message = err.message;
+    data.message = `Sorry, it seems that page doesn't exist!`;
+    data.imageUrl = '/images/error.jpg';
+    data.imageName = 'Error image';
   } else {
-    message = 'Oh no! There was a crash. Maybe try a different route?';
+    data.message = `Oh no! There was a crash. Maybe try a different route?`;
+    data.imageUrl = '/images/error.jpg';
+    data.imageName = 'Error image';
   }
+  const grid = gridErrorTemplate(data);
+
   res.render('errors/error', {
-    title: err.status || 'Server Error',
-    message,
+    title,
     nav,
+    grid,
   });
 });
 

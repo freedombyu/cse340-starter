@@ -1,5 +1,5 @@
 // Navigation Templates
-/*
+
 const formattedNumber = (number) =>
   new Intl.NumberFormat('en-US').format(number);
 
@@ -132,4 +132,3 @@ module.exports = {
   noVehiclesTemplate,
   gridErrorTemplate,
 };
-*/

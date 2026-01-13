@@ -1,51 +1,24 @@
 const reviews = [
-  {
-    commment: "So fast, it's almost like traveling in time.",
-    rate: 4,
-  },
-  {
-    commment: "Coolest ride on the road.",
-    rate: 4,
-  },
-  {
-    commment: "I'm feeling McFly!",
-    rate: 5,
-  },
-  {
-    commment: "The most futuristic ride of our day.",
-    rate: 4.5,
-  },
-  {
-    commment: "80's livin and I love it!",
-    rate: 5,
-  },
+  { comment: "So fast, it's almost like traveling in time.", rate: 4 },
+  { comment: "Coolest ride on the road.", rate: 4 },
+  { comment: "I'm feeling McFly!", rate: 5 },
+  { comment: "The most futuristic ride of our day.", rate: 4.5 },
+  { comment: "80's livin and I love it!", rate: 5 },
 ];
 
 document.getElementById("reviews-container").append(
   ...reviews.map((review) => {
     const li = document.createElement("li");
-    li.innerHTML = `${review.commment} (${review.rate}/5)`;
+    li.innerHTML = `${review.comment} (${review.rate}/5)`;
     return li;
   })
 );
 
 const upgrades = [
-  {
-    imageUrl: "/images/upgrades/flux-cap.png",
-    imageCaption: "Flux Capacitor",
-  },
-  {
-    imageUrl: "/images/upgrades/flame.jpg",
-    imageCaption: "Flame Decals",
-  },
-  {
-    imageUrl: "/images/upgrades/bumper_sticker.jpg",
-    imageCaption: "Bumper Stickers",
-  },
-  {
-    imageUrl: "/images/upgrades/hub-cap.jpg",
-    imageCaption: "Hub Caps",
-  },
+  { imageUrl: "/images/upgrades/flux-cap.png", imageCaption: "Flux Capacitor" },
+  { imageUrl: "/images/upgrades/flame.jpg", imageCaption: "Flame Decals" },
+  { imageUrl: "/images/upgrades/bumper_sticker.jpg", imageCaption: "Bumper Stickers" },
+  { imageUrl: "/images/upgrades/hub-cap.jpg", imageCaption: "Hub Caps" },
 ];
 
 document.getElementById("upgrades-container").append(
@@ -67,15 +40,9 @@ document.getElementById("upgrades-container").append(
 );
 
 const heroCardData = [
-  {
-    feature: "3 Cup holders",
-  },
-  {
-    feature: "Superman doors",
-  },
-  {
-    feature: "Fuzzy dice!",
-  },
+  { feature: "3 Cup holders" },
+  { feature: "Superman doors" },
+  { feature: "Fuzzy dice!" },
 ];
 
 document.getElementById("hero-features").append(

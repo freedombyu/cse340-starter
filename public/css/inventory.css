@@ -1,0 +1,261 @@
+/* ==================== Inventory Management Styles ==================== */
+
+/* Management Container */
+.management-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem;
+  }
+  
+  .management-container h1 {
+    color: #333;
+    border-bottom: 2px solid #4c96d7;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .management-options {
+    background-color: #f5f5f5;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  .management-options h2 {
+    color: #333;
+    margin-top: 0;
+    margin-bottom: 1rem;
+  }
+  
+  .management-links {
+    margin-top: 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  
+  .management-link {
+    display: inline-block;
+    background-color: #4c96d7;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background-color 0.3s;
+  }
+  
+  .management-link:hover {
+    background-color: #3a75a5;
+  }
+  
+  /* Form Container */
+  .form-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 1rem;
+  }
+  
+  .form-container h1 {
+    color: #333;
+    border-bottom: 2px solid #4c96d7;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  /* Form Styling */
+  #addInventoryForm,
+  #addClassificationForm {
+    background-color: #f5f5f5;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  #addInventoryForm fieldset,
+  #addClassificationForm fieldset {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  #addInventoryForm legend,
+  #addClassificationForm legend {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #333;
+    padding: 0 0.5rem;
+  }
+  
+  .form-group {
+    margin-bottom: 1.25rem;
+  }
+  
+  .form-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    color: #333;
+  }
+  
+  .form-group input,
+  .form-group textarea,
+  .form-group select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+    font-family: inherit;
+  }
+  
+  .form-hint {
+    display: block;
+    font-size: 0.85rem;
+    color: #666;
+    margin-top: 0.5rem;
+  }
+  
+  .form-group input:focus,
+  .form-group textarea:focus,
+  .form-group select:focus {
+    outline: none;
+    border-color: #4c96d7;
+    box-shadow: 0 0 3px rgba(76, 150, 215, 0.5);
+  }
+  
+  .form-group textarea {
+    min-height: 120px;
+    resize: vertical;
+  }
+  
+  /* Form Validation */
+  .form-group input:invalid,
+  .form-group textarea:invalid,
+  .form-group select:invalid {
+    border-color: #e74c3c;
+  }
+  
+  .form-group input:valid,
+  .form-group textarea:valid,
+  .form-group select:valid {
+    border-color: #2ecc71;
+  }
+  
+  /* Submit Button */
+  .form-group button {
+    background-color: #4c96d7;
+    color: white;
+    font-size: 1rem;
+    font-weight: bold;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .form-group button:hover {
+    background-color: #3a75a5;
+  }
+  
+  /* Messages */
+  .notice {
+    padding: 1rem;
+    margin: 1.5rem 0;
+    border-radius: 4px;
+    font-weight: bold;
+  }
+  
+  .success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+  }
+  
+  .error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+  }
+  
+  .error-list {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+    border-radius: 4px;
+    padding: 1rem 1rem 1rem 2rem;
+    margin: 1.5rem 0;
+  }
+  
+  .error-list li {
+    margin-bottom: 0.5rem;
+  }
+  
+  .error-list li:last-child {
+    margin-bottom: 0;
+  }
+  
+  /* Vehicle Detail Styles */
+  .vehicle-detail {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    margin: 2rem 0;
+  }
+  
+  .vehicle-detail img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+  }
+  
+  .vehicle-info {
+    flex: 1;
+    min-width: 300px;
+  }
+  
+  .vehicle-info h2 {
+    color: #333;
+    margin-top: 0;
+    margin-bottom: 1rem;
+    border-bottom: 2px solid #4c96d7;
+    padding-bottom: 0.5rem;
+  }
+  
+  .vehicle-price {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #155724;
+    margin: 1rem 0;
+  }
+  
+  /* Responsive adjustments */
+  @media screen and (max-width: 768px) {
+    .form-container,
+    .management-container {
+      padding: 0.5rem;
+    }
+  
+    #addInventoryForm fieldset,
+    #addClassificationForm fieldset {
+      padding: 1rem;
+    }
+  
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      padding: 0.5rem;
+    }
+  
+    .vehicle-detail {
+      flex-direction: column;
+    }
+  
+    .management-links {
+      flex-direction: column;
+    }
+  }
