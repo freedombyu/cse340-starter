@@ -1,5 +1,11 @@
 <% if (title) { %>
-  <%- grid %>
+  <h1><%= title %></h1>
+  <% if (typeof message !== 'undefined') { %>
+    <p><%= message %></p>
+  <% } %>
+  <% if (typeof grid !== 'undefined') { %>
+    <%- grid %>
+  <% } %>
 <% } else { %>
   <p>No content available. <a href="/">Return to Home</a></p>
 <% } %>

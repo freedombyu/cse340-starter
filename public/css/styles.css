@@ -245,7 +245,8 @@ section {
 }
 
 .namePrice h2 a {
-  color: #1f2937;
+  color: #2773de;
+  text-decoration: underline rgb(126, 122, 122);
 }
 
 .namePrice h2 a:hover {
@@ -256,6 +257,16 @@ section {
   font-size: 1.125rem;
   font-weight: 600;
   color: #059669;
+}
+
+/* Vehicle Detail Spacing */
+.vehicle-detail .vehicle-info p {
+  margin-bottom: 1rem;
+  line-height: 1.6;
+}
+
+.vehicle-detail .vehicle-info p:last-child {
+  margin-bottom: 0; /* Remove margin from last paragraph */
 }
 
 /******* Inventory Details (Alternative Layout) ***************/

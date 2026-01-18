@@ -39,39 +39,31 @@ app.use('/error', serverErrorRouter);
  * Must be keep after all other routes
  *************************/
 app.use(async (req, res, next) => {
-  next({ status: 404, message: 'Not Found' });
+  next({ status: 404, message: 'Sorry, we appear to have lost that page' });
 });
 
-/* ***********************
+/* *****************************************
  * Express Error Handler
  * Must be keep after all other middleware
- *************************/
+ *******************************************/
 app.use(async (err, req, res, next) => {
-  const nav = await getNav();
-  const title = `${err.message}` || 'Server Error';
-  const data = {
-    title,
-    statusCode: err.status,
-  };
-  console.error(`Error at: "${req.originalUrl}": ${err.message}`);
-  if (err.status === 404) {
-    data.message = `Sorry, it seems that page doesn't exist!`;
-    data.imageUrl = '/images/error.jpg';
-    data.imageName = 'Error image';
+  let nav = await getNav()  
+  console.error(`Error at: "${req.originalUrl}": ${err.message}`)
+  
+  let message;  
+  if(err.status == 404) {
+    message = err.message
   } else {
-    data.message = `Oh no! There was a crash. Maybe try a different route?`;
-    data.imageUrl = '/images/error.jpg';
-    data.imageName = 'Error image';
+    message = 'Oh no! There was a crash. Maybe try a different route?'
   }
-  const grid = gridErrorTemplate(data);
-
-  res.render('errors/error', {
-    title,
+  
+  res.render("errors/error", {
+    title: err.status || 'Server Error',
+    message,
     nav,
-    grid,
-  });
-});
-
+    errors: null,
+  })
+})
 /* ***********************
  * Local Server Information
  * Values from .env (environment) file
