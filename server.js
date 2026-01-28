@@ -10,6 +10,7 @@ const express = require('express');
 const expressLayouts = require('express-ejs-layouts');
 const session = require('express-session');
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 const app = express();
 const pool = require('./database/');
 const static = require('./routes/static');
@@ -17,7 +18,7 @@ const inventoryRouter = require('./routes/inventoryRoute');
 const serverErrorRouter = require('./routes/serverErrorRouter');
 const accountRouter = require('./routes/accountRoute');
 const { buildHome } = require('./controllers/baseController');
-const { getNav, handleErrors } = require('./utilities');
+const { getNav, handleErrors, checkJWTToken } = require('./utilities');
 const { gridErrorTemplate } = require('./templates');
 
 /* ***********************
@@ -38,6 +39,8 @@ app.use(
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cookieParser());
+app.use(checkJWTToken);
 
 // Express Messages Middleware
 app.use(require('connect-flash')());
@@ -71,7 +74,7 @@ app.use('/account', accountRouter);
  * Must be keep after all other routes
  *************************/
 app.use(async (req, res, next) => {
-  next({ status: 500, message: 'Server Error' });
+  next({ status: 404, message: 'Not Found' });
 });
 
 /* ***********************
@@ -85,10 +88,9 @@ app.use(async (err, req, res, next) => {
   let grid;
   const data = {
     title,
-    statusCode: err.status || 500,
+    statusCode: err.status,
   };
   console.error(`Error at: "${req.originalUrl}": ${err.message}`);
-  
   if (err.status === 404) {
     data.message = `Sorry, it seems that page doesn't exists!`;
     data.imageUrl = '/images/site/404-empty.png';
@@ -98,11 +100,9 @@ app.use(async (err, req, res, next) => {
     data.imageUrl = '/images/site/500-crash.png';
     data.imageName = 'Image of an crash';
   }
-  
   grid = gridErrorTemplate(data);
 
-  // Set the HTTP status code before rendering
-  res.status(err.status || 500).render('errors/error', {
+  res.render('errors/error', {
     title,
     nav,
     grid,
