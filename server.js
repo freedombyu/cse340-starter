@@ -8,13 +8,43 @@
 require('dotenv').config();
 const express = require('express');
 const expressLayouts = require('express-ejs-layouts');
+const session = require('express-session');
+const bodyParser = require('body-parser');
 const app = express();
+const pool = require('./database/');
 const static = require('./routes/static');
 const inventoryRouter = require('./routes/inventoryRoute');
 const serverErrorRouter = require('./routes/serverErrorRouter');
+const accountRouter = require('./routes/accountRoute');
 const { buildHome } = require('./controllers/baseController');
 const { getNav, handleErrors } = require('./utilities');
 const { gridErrorTemplate } = require('./templates');
+
+/* ***********************
+ * Middleware
+ * ************************/
+app.use(
+  session({
+    store: new (require('connect-pg-simple')(session))({
+      createTableIfMissing: true,
+      pool,
+    }),
+    secret: process.env.SESSION_SECRET,
+    resave: true,
+    saveUninitialized: true,
+    name: 'sessionId',
+  })
+);
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+// Express Messages Middleware
+app.use(require('connect-flash')());
+app.use(function (req, res, next) {
+  res.locals.messages = require('express-messages')(req, res);
+  next();
+});
 
 /* ***********************
  * View Engine and Templates
@@ -32,38 +62,54 @@ app.use(static);
 app.get('/', handleErrors(buildHome));
 // Inventory Routes
 app.use('/inv', inventoryRouter);
-app.use('/error', serverErrorRouter);
+app.use('/server-error', serverErrorRouter);
+// Account Routes
+app.use('/account', accountRouter);
 
 /* ***********************
  * Route Not Found
  * Must be keep after all other routes
  *************************/
 app.use(async (req, res, next) => {
-  next({ status: 404, message: 'Sorry, we appear to have lost that page' });
+  next({ status: 500, message: 'Server Error' });
 });
 
-/* *****************************************
+/* ***********************
  * Express Error Handler
  * Must be keep after all other middleware
- *******************************************/
+ *************************/
 app.use(async (err, req, res, next) => {
-  let nav = await getNav()  
-  console.error(`Error at: "${req.originalUrl}": ${err.message}`)
+  const nav = await getNav();
+  const title = `${err.message}` || 'Server Error';
+  let message = '';
+  let grid;
+  const data = {
+    title,
+    statusCode: err.status || 500,
+  };
+  console.error(`Error at: "${req.originalUrl}": ${err.message}`);
   
-  let message;  
-  if(err.status == 404) {
-    message = err.message
+  if (err.status === 404) {
+    data.message = `Sorry, it seems that page doesn't exists!`;
+    data.imageUrl = '/images/site/404-empty.png';
+    data.imageName = 'Image of an empty street';
   } else {
-    message = 'Oh no! There was a crash. Maybe try a different route?'
+    data.message = `Oh no! There was a crash. Maybe try a different route?`;
+    data.imageUrl = '/images/site/500-crash.png';
+    data.imageName = 'Image of an crash';
   }
   
-  res.render("errors/error", {
-    title: err.status || 'Server Error',
-    message,
+  grid = gridErrorTemplate(data);
+
+  // Set the HTTP status code before rendering
+  res.status(err.status || 500).render('errors/error', {
+    title,
     nav,
+    grid,
     errors: null,
-  })
-})
+  });
+});
+
 /* ***********************
  * Local Server Information
  * Values from .env (environment) file

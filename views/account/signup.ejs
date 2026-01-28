@@ -1,0 +1,74 @@
+<% if (title) { %>
+<h1><%= title %></h1>
+<% } else { res.redirect('/') } %> <% if (errors) { %>
+<ul class="notice error">
+  <% errors.array().forEach(error => { %>
+  <li><%= error.msg %></li>
+  <% }) %>
+</ul>
+
+<% } %> <%- messages() %> <%#- grid %>
+<!-- Grid approach cannot be used here in order to enforce password
+rules validation as it is not working when parsing as a template -->
+<form class="form" action="/account/signup" method="post">
+  <fieldset>
+    <label
+      >First Name<span class="required">*</span>
+      <input
+        type="text"
+        name="acc_firstname"
+        id="firstname"
+        required
+        autocomplete
+        value="<%= formData.acc_firstname %>"
+      />
+    </label>
+    <label
+      >Last Name<span class="required">*</span>
+      <input
+        type="text"
+        name="acc_lastname"
+        id="lastname"
+        required
+        autocomplete
+        value="<%= formData.acc_lastname %>"
+      />
+    </label>
+    <label
+      >Email<span class="required">*</span>
+      <input
+        type="email"
+        name="acc_email"
+        id="email"
+        required
+        autocomplete
+        value="<%= formData.acc_email %>"
+      />
+    </label>
+    <label id="password-field" for="acc_password"
+      ><span>Password</span> <span class="required">*</span>
+      <input
+        type="password"
+        name="acc_password"
+        id="password"
+        required
+        pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{12,}$"
+      />
+      <img
+        src="/images/site/eye-close.png"
+        alt="eye close icon"
+        id="eye-icon"
+      />
+      <span>
+        Passwords must be at least 12 characters and contain at least 1 number,
+        1 capital letter and 1 special character
+      </span>
+    </label>
+  </fieldset>
+  <fieldset class="submit-btn-container">
+    <input type="submit" role="button" value="Signup" />
+  </fieldset>
+  <div>
+    <p>Have account? <a href="/account/login">Login</a></p>
+  </div>
+</form>

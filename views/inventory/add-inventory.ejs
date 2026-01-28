@@ -1,0 +1,136 @@
+<% if (title) { %>
+<h1><%= title %></h1>
+<% } else { res.redirect('/') } %>
+
+<% if (errors) { %>
+<ul class="notice error">
+  <% errors.array().forEach(error => { %>
+  <li><%= error.msg %></li>
+  <% }) %>
+</ul>
+<% } %>
+
+<%- messages() %>
+
+<form id="add-edit-form" class="form" action="<%- formAction %>" method="post">
+  <fieldset>
+    <label>
+      Classification<span class="required">*</span>
+      <select name="classification_id" id="clasId" required>
+        <option
+          value=""
+          disabled
+          <%= typeof formData.classification_id !== 'undefined' ? "" : "selected" %>
+        >
+          Select Classification
+        </option>
+        <%- clasOptions %>
+      </select>
+    </label>
+    
+    <label>
+      Make<span class="required">*</span>
+      <input
+        type="text"
+        name="inv_make"
+        value="<%= typeof formData.inv_make !== 'undefined' ? formData.inv_make : '' %>"
+        id="invMake"
+        required
+      />
+    </label>
+    
+    <label>
+      Model<span class="required">*</span>
+      <input
+        type="text"
+        name="inv_model"
+        value="<%= typeof formData.inv_model !== 'undefined' ? formData.inv_model : '' %>"
+        id="invModel"
+        required
+      />
+    </label>
+    
+    <label>
+      Year<span class="required">*</span>
+      <input
+        type="number"
+        name="inv_year"
+        value="<%= typeof formData.inv_year !== 'undefined' ? formData.inv_year : '' %>"
+        id="invYear"
+        min="1900"
+        max="2099"
+        step="1"
+        required
+      />
+    </label>
+    
+    <label>
+      Description<span class="required">*</span>
+      <textarea
+        name="inv_description"
+        id="invDescription"
+        rows="5"
+        required
+      ><%= typeof formData.inv_description !== 'undefined' ? formData.inv_description : '' %></textarea>
+    </label>
+    
+    <label>
+      Image Path<span class="required">*</span>
+      <input
+        type="text"
+        name="inv_image"
+        value="<%= typeof formData.inv_image !== 'undefined' ? formData.inv_image : '/images/vehicles/no-image.png' %>"
+        id="invImagePath"
+        required
+      />
+    </label>
+    
+    <label>
+      Image Thumbnail<span class="required">*</span>
+      <input
+        type="text"
+        name="inv_thumbnail"
+        value="<%= typeof formData.inv_thumbnail !== 'undefined' ? formData.inv_thumbnail : '/images/vehicles/no-image.png' %>"
+        id="invImageThumbnail"
+        required
+      />
+    </label>
+    
+    <label>
+      Price<span class="required">*</span>
+      <input
+        type="number"
+        name="inv_price"
+        value="<%= typeof formData.inv_price !== 'undefined' ? formData.inv_price : '' %>"
+        id="invPrice"
+        required
+      />
+    </label>
+    
+    <label>
+      Miles<span class="required">*</span>
+      <input
+        type="number"
+        name="inv_miles"
+        value="<%= typeof formData.inv_miles !== 'undefined' ? formData.inv_miles : '' %>"
+        id="invMiles"
+        required
+      />
+    </label>
+    
+    <label>
+      Color<span class="required">*</span>
+      <input
+        type="text"
+        name="inv_color"
+        value="<%= typeof formData.inv_color !== 'undefined' ? formData.inv_color : '' %>"
+        id="invColor"
+        required
+      />
+    </label>
+  </fieldset>
+  
+  <fieldset class="submit-btn-container">
+    <input id="submit-btn" type="submit" role="button" value="<%- title %>" />
+  </fieldset>
+</form>

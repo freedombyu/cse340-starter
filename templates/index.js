@@ -5,7 +5,7 @@ const formattedNumber = (number) =>
 
 const navItemTemplate = (item) => `
   <li>
-    
+    <a
       href="/inv/type/${item.classification_id}"
       title="See our inventory of ${item.classification_name} vehicles"
       >${item.classification_name}</a
@@ -20,11 +20,24 @@ const navTemplate = (data) => `
   </ul>
 `;
 
-// Grid Inventory by Cassification Templates
+const clasOptionTemplate =
+  (clasId) =>
+  ({ classification_id, classification_name }) =>
+    `
+  <option value="${classification_id}" ${
+      clasId === classification_id ? 'selected' : ''
+    }>${classification_name}</option>
+`;
+
+const clasOptionsTemplate = (data, clas_id) => `
+  ${data.rows.map(clasOptionTemplate(clas_id)).join('')}
+`;
+
+// Grid Inventory by Classification Templates
 
 const gridItemTemplate = (vehicle) => `
   <li>
-    
+    <a
       href="../../inv/detail/${vehicle.inv_id}"
       title="View ${vehicle.inv_make} ${vehicle.inv_model} details"
       ><img
@@ -34,7 +47,7 @@ const gridItemTemplate = (vehicle) => `
     <hr />
     <div class="name-price">
       <h2>
-        
+        <a
           href="../../inv/detail/${vehicle.inv_id}"
           title="View ${vehicle.inv_make} ${vehicle.inv_model} details"
           >${vehicle.inv_make} ${vehicle.inv_model}</a
@@ -53,16 +66,23 @@ const gridTemplate = (rows) => `
 
 // Grid Inventory Details Templates
 
-const gridInventoryDetailsTemplate = ({
-  inv_year: year,
-  inv_make: make,
-  inv_model: model,
-  inv_image: image,
-  inv_price: price,
-  inv_description: description,
-  inv_color: color,
-  inv_miles: miles,
-}) => `
+const gridInventoryDetailsTemplate = (vehicle, reviews = []) => {
+  if (!vehicle) {
+    return '<p class="notice">Vehicle not found.</p>';
+  }
+  
+  const {
+    inv_year: year,
+    inv_make: make,
+    inv_model: model,
+    inv_image: image,
+    inv_price: price,
+    inv_description: description,
+    inv_color: color,
+    inv_miles: miles,
+  } = vehicle;
+  
+  return `
   <div>
     <div class="inventory-details-wrapper">
       <img
@@ -96,6 +116,14 @@ const gridInventoryDetailsTemplate = ({
     </div>
   </div>
 `;
+};
+
+const gridManagementTemplate = () => `
+<div class="inventory-management">
+  <a href="/inv/classification">Add New Classification</a>
+  <a href="/inv/inventory">Add New Vehicle</a>
+</div>
+`;
 
 // No vehicles template
 
@@ -119,9 +147,13 @@ const gridErrorTemplate = ({
     <div>
       <p class="code">${statusCode}</p>
       <p>${message}</p>
-      <img src="${imageUrl}" alt="${imageName}" width="100", height="100">
+      <img src="${imageUrl}" alt="${imageName}" width="100" height="100">
     </div>
   </div>
+`;
+
+const accountGridTemplate = () => `
+  <div>My Account</div>
 `;
 
 module.exports = {
@@ -131,4 +163,7 @@ module.exports = {
   gridInventoryDetailsTemplate,
   noVehiclesTemplate,
   gridErrorTemplate,
+  accountGridTemplate,
+  gridManagementTemplate,
+  clasOptionsTemplate,
 };

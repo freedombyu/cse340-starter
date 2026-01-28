@@ -1,32 +1,11 @@
-const utilities = require("../utilities/")
-const baseController = {}
+const { getNav } = require('../utilities');
 
-baseController.buildHome = async function(req, res){
-  const nav = await utilities.getNav()
-  res.render("index", {title: "Home", nav})
-}
+const buildHome = async (req, res) => {
+  const nav = await getNav();
+  req.flash("notice", "This is a flash message.")
+  res.render('index', { title: 'Home', nav, errors: null });
+};
 
-exports.buildManagement = async function (req, res, next) {
-  console.log("buildManagement function called")
-  try {
-    let nav = await utilities.getNav()
-    console.log("Navigation retrieved")
-    
-    const classificationList = await utilities.buildClassificationList()
-    console.log("Classification list built")
-    
-    console.log("Rendering management view")
-    res.render("./inventory/management", {
-      title: "Vehicle Management",
-      nav,
-      classificationList,
-      message: req.flash("notice")
-    })
-    console.log("Management view rendered")
-  } catch (error) {
-    console.error("Error in buildManagement:", error)
-    next(error)
-  }
-}
-
-module.exports = baseController
+module.exports = {
+  buildHome,
+};
