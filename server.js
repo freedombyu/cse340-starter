@@ -74,7 +74,7 @@ app.use('/account', accountRouter);
  * Must be keep after all other routes
  *************************/
 app.use(async (req, res, next) => {
-  next({ status: 404, message: 'Not Found' });
+  next({ status: 404, message: 'Server Error' });
 });
 
 /* ***********************
@@ -83,23 +83,26 @@ app.use(async (req, res, next) => {
  *************************/
 app.use(async (err, req, res, next) => {
   const nav = await getNav();
-  const title = `${err.message}` || 'Server Error';
-  let message = '';
+  const title = 'Server Error';
   let grid;
   const data = {
-    title,
     statusCode: err.status,
   };
+  
   console.error(`Error at: "${req.originalUrl}": ${err.message}`);
+  
   if (err.status === 404) {
-    data.message = `Sorry, it seems that page doesn't exists!`;
+    data.title = '404';
+    data.message = `Sorry, it seems that page doesn't exist!`;
     data.imageUrl = '/images/site/404-empty.png';
     data.imageName = 'Image of an empty street';
   } else {
+    data.title = '500';
     data.message = `Oh no! There was a crash. Maybe try a different route?`;
     data.imageUrl = '/images/site/500-crash.png';
-    data.imageName = 'Image of an crash';
+    data.imageName = 'Image of a crash';
   }
+  
   grid = gridErrorTemplate(data);
 
   res.render('errors/error', {
