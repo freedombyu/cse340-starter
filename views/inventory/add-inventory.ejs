@@ -103,6 +103,8 @@
         name="inv_price"
         value="<%= typeof formData.inv_price !== 'undefined' ? formData.inv_price : '' %>"
         id="invPrice"
+        min="0"
+        step="0.01"
         required
       />
     </label>
@@ -114,6 +116,8 @@
         name="inv_miles"
         value="<%= typeof formData.inv_miles !== 'undefined' ? formData.inv_miles : '' %>"
         id="invMiles"
+        min="0"
+        step="1"
         required
       />
     </label>

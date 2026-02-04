@@ -8,11 +8,11 @@ const validate = {}
 validate.classificationRules = () => {
   return [
     // Classification name is required, must be string with only alphanumeric characters
-    body("classification_name")
+    body("clas_name")
       .trim()
       .isLength({ min: 1 })
       .withMessage("Please provide a classification name.")
-      .isAlphanumeric()
+      .matches(/^[a-zA-Z0-9]+$/)
       .withMessage("Classification name can only contain alphanumeric characters, no spaces or special characters.")
   ]
 }
@@ -26,29 +26,20 @@ validate.inventoryRules = () => {
     body("inv_make")
       .trim()
       .isLength({ min: 1 })
-      .withMessage("Please provide the vehicle make.")
-      .isAlphanumeric()
-      .withMessage("Make can only contain letters and numbers."),
+      .withMessage("Please provide the vehicle make."),
 
     // Model is required and must be string
     body("inv_model")
       .trim()
       .isLength({ min: 1 })
-      .withMessage("Please provide the vehicle model.")
-      .isAlphanumeric()
-      .withMessage("Model can only contain letters and numbers."),
+      .withMessage("Please provide the vehicle model."),
 
     // Year is required and must be a 4-digit year
     body("inv_year")
       .trim()
       .isLength({ min: 4, max: 4 })
       .withMessage("Please provide a valid 4-digit year.")
-      .isNumeric()
-      .withMessage("Year must be a number.")
-      .custom(value => {
-        const year = parseInt(value)
-        return year >= 1900 && year <= 2099
-      })
+      .isInt({ min: 1900, max: 2099 })
       .withMessage("Year must be between 1900 and 2099."),
 
     // Description is required
@@ -69,21 +60,21 @@ validate.inventoryRules = () => {
       .isLength({ min: 1 })
       .withMessage("Please provide a thumbnail path."),
 
-    // Price is required and must be numeric
+    // Price is required and must be positive numeric
     body("inv_price")
       .trim()
       .isLength({ min: 1 })
       .withMessage("Please provide the vehicle price.")
-      .isNumeric()
-      .withMessage("Price must be a number."),
+      .isFloat({ min: 0 })
+      .withMessage("Price must be a positive number."),
 
-    // Miles is required and must be numeric
+    // Miles is required and must be positive numeric
     body("inv_miles")
       .trim()
       .isLength({ min: 1 })
       .withMessage("Please provide the vehicle mileage.")
-      .isNumeric()
-      .withMessage("Miles must be a number."),
+      .isInt({ min: 0 })
+      .withMessage("Miles must be a positive number."),
 
     // Color is required
     body("inv_color")
@@ -102,17 +93,16 @@ validate.inventoryRules = () => {
  * Check data and return errors or continue to classification
  * ***************************** */
 validate.checkClassificationData = async (req, res, next) => {
-  const { classification_name } = req.body
+  const { clas_name } = req.body
   let errors = []
   errors = validationResult(req)
   if (!errors.isEmpty()) {
     let nav = await utilities.getNav()
     res.render("inventory/add-classification", {
-      errors: errors.array(),
-      message: null,
+      errors,
       title: "Add New Classification",
       nav,
-      classification_name
+      clas_name
     })
     return
   }
@@ -128,13 +118,8 @@ validate.checkInventoryData = async (req, res, next) => {
   errors = validationResult(req)
   if (!errors.isEmpty()) {
     let nav = await utilities.getNav()
-    let classificationList = await utilities.buildClassificationList(classification_id)
-    res.render("inventory/add-inventory", {
-      errors: errors.array(),
-      message: null,
-      title: "Add New Vehicle",
-      nav,
-      classificationList,
+    let clasOptions = await utilities.buildClassificationList(classification_id)
+    const formData = {
       inv_make,
       inv_model,
       inv_year,
@@ -145,10 +130,18 @@ validate.checkInventoryData = async (req, res, next) => {
       inv_miles,
       inv_color,
       classification_id
+    }
+    res.render("inventory/add-inventory", {
+      errors,
+      title: "Add New Vehicle",
+      nav,
+      clasOptions,
+      formData,
+      formAction: '/inv/inventory'
     })
     return
   }
   next()
 }
 
-module.exports = validate 
+module.exports = validate
