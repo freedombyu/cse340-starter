@@ -21,20 +21,20 @@
     <fieldset>
       <label>
         First Name<span class="required">*</span>
-        <input type="text" name="acc_firstname" required
-               value="<%= accountData.acc_firstname %>">
+        <input type="text" name="account_firstname" required
+               value="<%= accountData.account_firstname %>">
       </label>
 
       <label>
         Last Name<span class="required">*</span>
-        <input type="text" name="acc_lastname" required
-               value="<%= accountData.acc_lastname %>">
+        <input type="text" name="account_lastname" required
+               value="<%= accountData.account_lastname %>">
       </label>
 
       <label>
         Email<span class="required">*</span>
-        <input type="email" name="acc_email" required
-               value="<%= accountData.acc_email %>">
+        <input type="email" name="account_email" required
+               value="<%= accountData.account_email %>">
       </label>
     </fieldset>
 
@@ -58,7 +58,7 @@
     <fieldset>
       <label id="password-field">
         New Password<span class="required">*</span>
-        <input type="password" name="acc_password" required
+        <input type="password" name="account_password" required
           pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{12,}$">
         <img src="/images/site/eye-close.png" alt="eye close icon" id="eye-icon">
       </label>

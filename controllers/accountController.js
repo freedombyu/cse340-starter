@@ -28,11 +28,14 @@ const buildAccount = async (req, res) => {
 
 const buildEditAccount = async (req, res) => {
   const { title, nav } = await buildEditAccountGrid()
+  const accountData = res.locals.accountData
+  
   res.render("./account/edit", {
     title,
     nav,
     dataErrors: null,
     passwordErrors: null,
+    accountData,
   })
 }
 
@@ -211,8 +214,26 @@ const logoutUser = (req, res) => {
    EDIT ACCOUNT DATA
 ========================= */
 const editAccountData = async (req, res) => {
+  const errors = validationResult(req)
   const { account_firstname, account_lastname, account_email } = req.body
-  const account_id = res.locals.accountData?.account_id  // from JWT middleware
+  const account_id = res.locals.accountData?.account_id
+
+  // Handle validation errors
+  if (!errors.isEmpty()) {
+    const { title, nav } = await buildEditAccountGrid()
+    return res.status(400).render("./account/edit", {
+      title,
+      nav,
+      dataErrors: errors,
+      passwordErrors: null,
+      accountData: {
+        account_id,
+        account_firstname,
+        account_lastname,
+        account_email
+      }
+    })
+  }
 
   try {
     const updatedAccount = await updateData(account_id, {
@@ -226,8 +247,22 @@ const editAccountData = async (req, res) => {
       return res.redirect("/account/edit")
     }
 
+    // Update the JWT token with new data
+    delete updatedAccount.account_password
+    const accessToken = jwt.sign(
+      updatedAccount,
+      process.env.ACCESS_TOKEN_SECRET,
+      { expiresIn: "1h" }
+    )
+    
+    res.cookie("jwt", accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV !== "development",
+      maxAge: 60 * 60 * 1000,
+    })
+
     req.flash("notice", "Account information updated successfully.")
-    res.redirect("/account/edit")
+    res.redirect("/account/")
   } catch (error) {
     console.error("editAccountData error:", error)
     req.flash("notice", "Error updating account information.")
@@ -239,8 +274,21 @@ const editAccountData = async (req, res) => {
    EDIT PASSWORD
 ========================= */
 const editPassword = async (req, res) => {
+  const errors = validationResult(req)
   const { account_password } = req.body
   const account_id = res.locals.accountData?.account_id
+
+  // Handle validation errors
+  if (!errors.isEmpty()) {
+    const { title, nav } = await buildEditAccountGrid()
+    return res.status(400).render("./account/edit", {
+      title,
+      nav,
+      dataErrors: null,
+      passwordErrors: errors,
+      accountData: res.locals.accountData
+    })
+  }
 
   try {
     const hashedPassword = await bcrypt.hash(account_password, 10)
@@ -252,7 +300,7 @@ const editPassword = async (req, res) => {
     }
 
     req.flash("notice", "Password updated successfully.")
-    res.redirect("/account/edit")
+    res.redirect("/account/")
   } catch (error) {
     console.error("editPassword error:", error)
     req.flash("notice", "Error updating password.")

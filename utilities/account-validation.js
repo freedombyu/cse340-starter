@@ -160,6 +160,12 @@ const checkUpdateData = async (req, res, next) => {
       nav,
       dataErrors: errors,
       passwordErrors: null,
+      accountData: {
+        account_id: res.locals.accountData?.account_id,
+        account_firstname,
+        account_lastname,
+        account_email
+      }
     });
     return;
   }
@@ -200,6 +206,7 @@ const checkPasswordUpdate = async (req, res, next) => {
       nav,
       dataErrors: null,
       passwordErrors: errors,
+      accountData: res.locals.accountData
     });
     return;
   }
