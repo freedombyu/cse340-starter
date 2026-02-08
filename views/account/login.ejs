@@ -1,40 +1,58 @@
 <% if (title) { %>
 <h1><%= title %></h1>
-<% } else { res.redirect('/') } %> <% if (errors) { %>
+<% } else { res.redirect('/') } %> 
+
+<% if (errors) { %>
 <ul class="notice error">
   <% errors.array().forEach(error => { %>
   <li><%= error.msg %></li>
   <% }) %>
 </ul>
+<% } %> 
 
-<% } %> <%- messages() %>
+<%- messages() %>
+
 <form class="form" action="/account/login" method="post">
   <fieldset>
-    <label
-      >Email<span class="required">*</span>
+    <label>
+      Email<span class="required">*</span>
       <input
         type="email"
-        name="acc_email"
+        name="account_email"
         id="email"
         required
-        autocomplete
-        value="<%= acc_email %>"
+        autocomplete="email"
+        value="<%= account_email %>"
       />
     </label>
-    <label id="password-field"
-      >Password<span class="required">*</span>
-      <input type="password" name="acc_password" id="password" required />
+    
+    <label id="password-field">
+      Password<span class="required">*</span>
+      <input 
+        type="password" 
+        name="account_password" 
+        id="password" 
+        required
+        pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{12,}$"
+      />
       <img
         src="/images/site/eye-close.png"
         alt="eye close icon"
         id="eye-icon"
       />
     </label>
+    
+    <span class="password-requirements">
+      Passwords must be at least 12 characters and contain at least 1 number, 
+      1 capital letter and 1 special character
+    </span>
   </fieldset>
+  
   <fieldset class="submit-btn-container">
     <input type="submit" role="button" value="Login" />
   </fieldset>
-  <div>
+  
+  <div class="form-footer">
     <p>No account? <a href="/account/signup">Sign Up</a></p>
   </div>
 </form>

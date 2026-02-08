@@ -15,13 +15,9 @@
 <form id="add-edit-form" class="form" action="<%- formAction %>" method="post">
   <fieldset>
     <label>
-      Classification<span class="required">*</span>
+      Classification <span class="required">*</span>
       <select name="classification_id" id="clasId" required>
-        <option
-          value=""
-          disabled
-          <%= typeof formData.classification_id !== 'undefined' ? "" : "selected" %>
-        >
+        <option value="" disabled <%= typeof formData.classification_id !== 'undefined' ? "" : "selected" %>>
           Select Classification
         </option>
         <%- clasOptions %>
@@ -41,8 +37,7 @@
     
     <label>
       Model<span class="required">*</span>
-      <input
-        type="text"
+      <input       type="text"
         name="inv_model"
         value="<%= typeof formData.inv_model !== 'undefined' ? formData.inv_model : '' %>"
         id="invModel"

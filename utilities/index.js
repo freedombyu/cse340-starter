@@ -132,18 +132,18 @@ const buildDeleteInventoryGrid = async (invId) => {
 const buildLoginGrid = async () => {
   const nav = await getNav();
   const title = `Login`;
-  const acc_email = '';
+  const account_email = '';
   return {
     title,
     nav,
-    acc_email,
+    account_email,
   };
 };
 
 const buildSignupGrid = async () => {
   const nav = await getNav();
   const title = `Signup`;
-  const formData = { acc_firstname: '', acc_lastname: '', acc_email: '' };
+  const formData = { account_firstname: '', account_lastname: '', account_email: '' };
   return {
     title,
     nav,
@@ -163,7 +163,7 @@ const buildAccountGrid = async () => {
 
 const buildEditAccountGrid = async () => {
   const nav = await getNav();
-  const title = `Update Account`;
+  const title = `Edit Account Information`;
   return {
     title,
     nav,
@@ -217,8 +217,8 @@ const isEmployeeOrAdmin = (req, res, next) => {
           res.clearCookie('jwt');
           return res.redirect('/account/login');
         }
-        const { acc_type } = accountData;
-        if (acc_type === 'Employee' || acc_type === 'Admin') {
+        const { account_type } = accountData;
+        if (account_type === 'Employee' || account_type === 'Admin') {
           next();
         } else {
           req.flash(
@@ -249,4 +249,6 @@ module.exports = {
   buildDeleteInventoryGrid,
   isEmployeeOrAdmin,
   buildEditAccountGrid,
+  handleErrors,
+  checkJWTToken,
 };

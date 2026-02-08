@@ -1,10 +1,32 @@
 <% if (title) { %>
 <h1><%= title %></h1>
-<% } else { res.redirect('/') } %> <% if (errors) { %>
-<ul class="notice">
-  <% errors.array().forEach(error => { %>
-  <li><%= error.msg %></li>
-  <% }) %>
-</ul>
+<% } else { res.redirect('/') } %>
 
-<% } %> <%- messages() %> <%- grid %>
+<%- messages() %>
+
+<% if (locals.loggedin && locals.accountData) { %>
+  <div class="account-welcome">
+    <p class="welcome-message">You're logged in as <strong><%= accountData.account_firstname %> <%= accountData.account_lastname %></strong></p>
+    <p class="account-email">Email: <strong><%= accountData.account_email %></strong></p>
+  </div>
+  
+  <% if (accountData.account_type === 'Employee' || accountData.account_type === 'Admin') { %>
+    <section class="account-section">
+      <h2>Inventory Management</h2>
+      <p><a href="/inv/" class="account-link">Manage Inventory</a></p>
+    </section>
+  <% } %>
+  
+  <section class="account-section">
+    <h2>Account Management</h2>
+    <p><a href="/account/edit" class="account-link">Edit Account Information</a></p>
+  </section>
+
+  <section class="account-section">
+    <h2>Account Actions</h2>
+    <p><a href="/account/logout" class="account-link logout-link">Logout</a></p>
+  </section>
+  
+<% } else { %>
+  <p>Please <a href="/account/login">log in</a> to view this page.</p>
+<% } %>

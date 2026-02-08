@@ -1,3 +1,4 @@
+// Reviews Data and Rendering
 const reviews = [
   {
     commment: "So fast, it's almost like traveling in time.",
@@ -29,6 +30,7 @@ document.getElementById('reviews-container')?.append(
   })
 );
 
+// Upgrades Data and Rendering
 const upgrades = [
   {
     imageUrl: '/images/upgrades/flux-cap.png',
@@ -66,6 +68,7 @@ document.getElementById('upgrades-container')?.append(
   })
 );
 
+// Hero Features Data and Rendering
 const heroCardData = [
   {
     feature: '3 Cup holders',
@@ -86,6 +89,7 @@ document.getElementById('hero-features')?.append(
   })
 );
 
+// Current Car Display
 const currentCar = 'Delorean';
 
 Array.from(document.getElementsByClassName('current-car')).forEach(
@@ -94,24 +98,79 @@ Array.from(document.getElementsByClassName('current-car')).forEach(
   }
 );
 
+// Password Visibility Toggle (for Login and Account Edit pages)
 const eyeIcon = document.getElementById('eye-icon');
-eyeIcon?.addEventListener('click', () => {
-  const passwordInput = document.getElementById('password');
-  if (passwordInput.type === 'password') {
-    passwordInput.type = 'text';
-    eyeIcon.src = '/images/site/eye-open.png';
-  } else {
-    passwordInput.type = 'password';
-    eyeIcon.src = '/images/site/eye-close.png';
-  }
-});
+const passwordInput = document.getElementById('password');
 
+if (eyeIcon && passwordInput) {
+  eyeIcon.addEventListener('click', () => {
+    if (passwordInput.type === 'password') {
+      passwordInput.type = 'text';
+      eyeIcon.src = '/images/site/eye-open.png';
+      eyeIcon.alt = 'eye open icon';
+    } else {
+      passwordInput.type = 'password';
+      eyeIcon.src = '/images/site/eye-close.png';
+      eyeIcon.alt = 'eye close icon';
+    }
+  });
+}
+
+// Add Review Modal
 const addReviewBtn = document.getElementById('add-review-btn');
-addReviewBtn?.addEventListener('click', () => {
-  console.log('clicked');
-  const modal = document.getElementById('add-review-dialog');
-  modal.showModal();
-  document.getElementById('close-modal').addEventListener('click', () => {
-    modal.close();
+if (addReviewBtn) {
+  addReviewBtn.addEventListener('click', () => {
+    console.log('Add review button clicked');
+    const modal = document.getElementById('add-review-dialog');
+    if (modal) {
+      modal.showModal();
+      
+      const closeModalBtn = document.getElementById('close-modal');
+      if (closeModalBtn) {
+        closeModalBtn.addEventListener('click', () => {
+          modal.close();
+        });
+      }
+    }
+  });
+}
+
+// Form Validation Enhancement (optional)
+const forms = document.querySelectorAll('.form');
+forms.forEach(form => {
+  form.addEventListener('submit', (e) => {
+    const requiredInputs = form.querySelectorAll('[required]');
+    let isValid = true;
+    
+    requiredInputs.forEach(input => {
+      if (!input.value.trim()) {
+        isValid = false;
+        input.classList.add('error');
+      } else {
+        input.classList.remove('error');
+      }
+    });
+    
+    if (!isValid) {
+      e.preventDefault();
+      alert('Please fill in all required fields.');
+    }
   });
 });
+
+// Real-time password validation feedback
+const passwordField = document.getElementById('password');
+if (passwordField) {
+  passwordField.addEventListener('input', () => {
+    const value = passwordField.value;
+    const pattern = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{12,}$/;
+    
+    if (pattern.test(value)) {
+      passwordField.classList.remove('invalid');
+      passwordField.classList.add('valid');
+    } else {
+      passwordField.classList.remove('valid');
+      passwordField.classList.add('invalid');
+    }
+  });
+}

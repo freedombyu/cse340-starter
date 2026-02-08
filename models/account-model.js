@@ -1,44 +1,118 @@
-const pool = require('../database');
+const pool = require("../database")
 
-/* *****************************
- *   Register new account
- * *************************** */
-const createUser = async (
-  acc_firstname,
-  acc_lastname,
-  acc_email,
-  acc_password
-) => {
+/* ***************************
+ * Create new user
+ * ************************** */
+async function createUser(
+  account_firstname,
+  account_lastname,
+  account_email,
+  account_password
+) {
   try {
-    const sql =
-      "INSERT INTO account (acc_firstname, acc_lastname, acc_email, acc_password, acc_type) VALUES ($1, $2, $3, $4, 'Client') RETURNING *";
-    return await pool.query(sql, [
-      acc_firstname,
-      acc_lastname,
-      acc_email,
-      acc_password,
-    ]);
-  } catch (error) {
-    return error.message;
-  }
-};
+    const sql = `
+      INSERT INTO account
+      (account_firstname, account_lastname, account_email, account_password, account_type)
+      VALUES ($1, $2, $3, $4, 'Client')
+      RETURNING account_id, account_firstname, account_lastname, account_email, account_type
+    `
 
-/* *****************************
- * Return account data using email address
- * ***************************** */
-const getAccountByEmail = async (acc_email) => {
-  try {
-    const result = await pool.query(
-      'SELECT acc_id, acc_firstname, acc_lastname, acc_email, acc_type, acc_password FROM account WHERE acc_email = $1',
-      [acc_email]
-    );
-    return result.rows[0];
+    const result = await pool.query(sql, [
+      account_firstname,
+      account_lastname,
+      account_email,
+      account_password,
+    ])
+
+    return result.rows[0]
   } catch (error) {
-    return new Error('No matching email found');
+    console.error("createUser error:", error)
+    return null
   }
-};
+}
+
+/* ***************************
+ * Get account by email
+ * ************************** */
+async function getAccountByEmail(account_email) {
+  try {
+    const sql = `
+      SELECT account_id, account_firstname, account_lastname,
+             account_email, account_type, account_password
+      FROM account
+      WHERE account_email = $1
+    `
+    const result = await pool.query(sql, [account_email])
+    return result.rows[0] || null
+  } catch (error) {
+    console.error("getAccountByEmail error:", error)
+    return null
+  }
+}
+
+/* ***************************
+ * Check if email exists (for validation)
+ * ************************** */
+async function checkExistingEmail(account_email) {
+  try {
+    const sql = `SELECT * FROM account WHERE account_email = $1`
+    const result = await pool.query(sql, [account_email])
+    return result.rowCount > 0
+  } catch (error) {
+    console.error("checkExistingEmail error:", error)
+    return false
+  }
+}
+
+/* ***************************
+ * Update account data
+ * ************************** */
+async function updateData(account_id, { account_firstname, account_lastname, account_email }) {
+  try {
+    const sql = `
+      UPDATE account
+      SET account_firstname = $1,
+          account_lastname = $2,
+          account_email = $3
+      WHERE account_id = $4
+      RETURNING account_id, account_firstname, account_lastname, account_email, account_type
+    `
+    const data = await pool.query(sql, [
+      account_firstname,
+      account_lastname,
+      account_email,
+      account_id,
+    ])
+    return data.rows[0]
+  } catch (error) {
+    console.error("updateData error:", error)
+    return null
+  }
+}
+
+/* ***************************
+ * Update password
+ * ************************** */
+async function updatePassword(account_id, account_password) {
+  try {
+    const sql = `
+      UPDATE account
+      SET account_password = $1
+      WHERE account_id = $2
+      RETURNING account_id
+    `
+    const data = await pool.query(sql, [account_password, account_id])
+    return data.rows[0]
+  } catch (error) {
+    console.error("updatePassword error:", error)
+    return null
+  }
+}
 
 module.exports = {
   createUser,
   getAccountByEmail,
-};
+  checkExistingEmail,
+  updatePassword,
+  updateData,
+}

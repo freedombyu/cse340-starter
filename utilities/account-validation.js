@@ -1,5 +1,5 @@
 const { body, validationResult } = require('express-validator');
-const { buildSignupGrid, buildLoginGrid } = require('.'); // Add buildLoginGrid
+const { buildSignupGrid, buildLoginGrid, buildEditAccountGrid } = require('.');
 const { checkExistingEmail } = require('../models/account-model');
 
 /*  **********************************
@@ -8,27 +8,27 @@ const { checkExistingEmail } = require('../models/account-model');
 const signupRules = () => {
   return [
     // firstname is required and must be string
-    body('acc_firstname')
+    body('account_firstname')
       .trim()
       .escape()
       .notEmpty()
       .withMessage('Please provide a first name.'),
 
     // lastname is required and must be string
-    body('acc_lastname')
+    body('account_lastname')
       .trim()
       .escape()
       .notEmpty()
       .withMessage('Please provide a last name.'),
 
     // valid email is required and cannot already exist in the DB
-    body('acc_email')
+    body('account_email')
       .trim()
       .isEmail()
       .normalizeEmail()
       .withMessage('A valid email is required.')
-      .custom(async (acc_email) => {
-        const emailExist = await checkExistingEmail(acc_email);
+      .custom(async (account_email) => {
+        const emailExist = await checkExistingEmail(account_email);
         if (emailExist) {
           throw new Error(
             'Email already exists. Please login or register with a different email.'
@@ -37,7 +37,7 @@ const signupRules = () => {
       }),
 
     // password is required and must be strong password
-    body('acc_password')
+    body('account_password')
       .trim()
       .notEmpty()
       .withMessage('Password is required')
@@ -56,7 +56,7 @@ const signupRules = () => {
  * Check data and return errors or continue to registration
  * ***************************** */
 const checkUserSignupData = async (req, res, next) => {
-  const { acc_firstname, acc_lastname, acc_email } = req.body;
+  const { account_firstname, account_lastname, account_email } = req.body;
   let errors = [];
   errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -65,10 +65,10 @@ const checkUserSignupData = async (req, res, next) => {
       errors,
       title,
       nav,
-      formData: {  // CHANGED: Wrap fields in formData object
-        acc_firstname,
-        acc_lastname,
-        acc_email,
+      formData: {
+        account_firstname,
+        account_lastname,
+        account_email,
       },
     });
     return;
@@ -81,8 +81,8 @@ const checkUserSignupData = async (req, res, next) => {
  * ********************************* */
 const loginRules = () => {
   return [
-    // valid email is required and cannot already exist in the DB
-    body('acc_email')
+    // valid email is required
+    body('account_email')
       .trim()
       .escape()
       .notEmpty()
@@ -90,8 +90,8 @@ const loginRules = () => {
       .normalizeEmail()
       .withMessage('Invalid credentials, please review and try again.'),
 
-    // password is required and must be strong password
-    body('acc_password')
+    // password is required
+    body('account_password')
       .trim()
       .notEmpty()
       .withMessage('Invalid credentials, please review and try again.'),
@@ -102,16 +102,104 @@ const loginRules = () => {
  * Check data and return errors or continue to login
  * ***************************** */
 const checkUserLoginData = async (req, res, next) => {
-  const { acc_email } = req.body;
+  const { account_email } = req.body;
   let errors = [];
   errors = validationResult(req);
   if (!errors.isEmpty()) {
-    const { title, nav } = await buildLoginGrid(); // CHANGED: Use buildLoginGrid instead of buildSignupGrid
+    const { title, nav } = await buildLoginGrid();
     res.render('account/login', {
       errors,
       title,
       nav,
-      acc_email, // ADDED: Pass email back to login form
+      account_email,
+    });
+    return;
+  }
+  next();
+};
+
+/*  **********************************
+ *  Update Account Data Validation Rules
+ * ********************************* */
+const updateDataRules = () => {
+  return [
+    // firstname is required and must be string
+    body('account_firstname')
+      .trim()
+      .escape()
+      .notEmpty()
+      .withMessage('Please provide a first name.'),
+
+    // lastname is required and must be string
+    body('account_lastname')
+      .trim()
+      .escape()
+      .notEmpty()
+      .withMessage('Please provide a last name.'),
+
+    // valid email is required
+    body('account_email')
+      .trim()
+      .isEmail()
+      .normalizeEmail()
+      .withMessage('A valid email is required.'),
+  ];
+};
+
+/* ******************************
+ * Check update data and return errors or continue
+ * ***************************** */
+const checkUpdateData = async (req, res, next) => {
+  const { account_firstname, account_lastname, account_email } = req.body;
+  let errors = validationResult(req);
+  
+  if (!errors.isEmpty()) {
+    const { title, nav } = await buildEditAccountGrid();
+    res.render('account/edit', {
+      title,
+      nav,
+      dataErrors: errors,
+      passwordErrors: null,
+    });
+    return;
+  }
+  next();
+};
+
+/*  **********************************
+ *  Update Password Validation Rules
+ * ********************************* */
+const updatePasswordRules = () => {
+  return [
+    // password is required and must be strong password
+    body('account_password')
+      .trim()
+      .notEmpty()
+      .withMessage('Password is required')
+      .isStrongPassword({
+        minLength: 12,
+        minLowercase: 1,
+        minUppercase: 1,
+        minNumbers: 1,
+        minSymbols: 1,
+      })
+      .withMessage('Password does not meet requirements.'),
+  ];
+};
+
+/* ******************************
+ * Check password update and return errors or continue
+ * ***************************** */
+const checkPasswordUpdate = async (req, res, next) => {
+  let errors = validationResult(req);
+  
+  if (!errors.isEmpty()) {
+    const { title, nav } = await buildEditAccountGrid();
+    res.render('account/edit', {
+      title,
+      nav,
+      dataErrors: null,
+      passwordErrors: errors,
     });
     return;
   }
@@ -123,4 +211,8 @@ module.exports = {
   loginRules,
   checkUserSignupData,
   checkUserLoginData,
+  updateDataRules,
+  checkUpdateData,
+  updatePasswordRules,
+  checkPasswordUpdate,
 };

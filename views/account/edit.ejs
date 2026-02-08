@@ -1,0 +1,79 @@
+<% if (title) { %>
+  <h1><%= title %></h1>
+<% } %>
+
+<%- messages() %>
+
+<% if (loggedin && accountData) { %>
+
+  <!-- Update Account Data Form -->
+  <h2>Update Account Information</h2>
+
+  <% if (dataErrors) { %>
+    <ul class="notice error">
+      <% dataErrors.array().forEach(error => { %>
+        <li><%= error.msg %></li>
+      <% }) %>
+    </ul>
+  <% } %>
+
+  <form class="form" action="/account/update-data" method="post">
+    <fieldset>
+      <label>
+        First Name<span class="required">*</span>
+        <input type="text" name="acc_firstname" required
+               value="<%= accountData.acc_firstname %>">
+      </label>
+
+      <label>
+        Last Name<span class="required">*</span>
+        <input type="text" name="acc_lastname" required
+               value="<%= accountData.acc_lastname %>">
+      </label>
+
+      <label>
+        Email<span class="required">*</span>
+        <input type="email" name="acc_email" required
+               value="<%= accountData.acc_email %>">
+      </label>
+    </fieldset>
+
+    <fieldset class="submit-btn-container">
+      <input type="submit" value="Update Information">
+    </fieldset>
+  </form>
+
+  <!-- Update Password Form -->
+  <h2>Change Password</h2>
+
+  <% if (passwordErrors) { %>
+    <ul class="notice error">
+      <% passwordErrors.array().forEach(error => { %>
+        <li><%= error.msg %></li>
+      <% }) %>
+    </ul>
+  <% } %>
+
+  <form class="form" action="/account/update-password" method="post">
+    <fieldset>
+      <label id="password-field">
+        New Password<span class="required">*</span>
+        <input type="password" name="acc_password" required
+          pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{12,}$">
+        <img src="/images/site/eye-close.png" alt="eye close icon" id="eye-icon">
+      </label>
+
+      <span class="password-requirements">
+        Passwords must be at least 12 characters and contain at least 1 number,
+        1 capital letter and 1 special character
+      </span>
+    </fieldset>
+
+    <fieldset class="submit-btn-container">
+      <input type="submit" value="Change Password">
+    </fieldset>
+  </form>
+
+<% } else { %>
+  <p>Please <a href="/account/login">log in</a> to view this page.</p>
+<% } %>
