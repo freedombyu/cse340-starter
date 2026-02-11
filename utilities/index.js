@@ -217,7 +217,7 @@ const checkLogin = (req, res, next) => {
 
 /* ****************************************
  * Middleware to check Admin or Employee account type
- * ✅ FIXED: Added else block to handle missing JWT token
+ * FIXED: Added else block to handle missing JWT token
  **************************************** */
 const isEmployeeOrAdmin = (req, res, next) => {
   if (req.cookies.jwt) {
