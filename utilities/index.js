@@ -52,17 +52,17 @@ const buildInventoryGrid = async (invId) => {
     return {
       grid: '<p class="notice">Vehicle not found.</p>',
       title: 'Vehicle Not Found',
+      vehicle: null,
       nav: await getNav(),
     };
   }
   
-  // Remove the reviews line
-  // const inventoryReviews = await getReviewsByInventoryId(invId);
   const nav = await getNav();
   
   return {
-    grid: gridInventoryDetailsTemplate(inventoryDetail, []), // Pass empty array for reviews
+    grid: gridInventoryDetailsTemplate(inventoryDetail, []), 
     title: `${inventoryDetail.inv_year} ${inventoryDetail.inv_make} ${inventoryDetail.inv_model}`,
+    vehicle: inventoryDetail,
     nav,
   };
 };
@@ -188,7 +188,7 @@ const checkJWTToken = (req, res, next) => {
       process.env.ACCESS_TOKEN_SECRET,
       (err, accountData) => {
         if (err) {
-          req.flash('Please log in');
+          req.flash('notice', 'Please log in');
           res.clearCookie('jwt');
           return res.redirect('/account/login');
         }
@@ -204,7 +204,20 @@ const checkJWTToken = (req, res, next) => {
 };
 
 /* ****************************************
+ * Middleware to check if user is logged in
+ **************************************** */
+const checkLogin = (req, res, next) => {
+  if (res.locals.loggedin) {
+    next();
+  } else {
+    req.flash("notice", "Please log in.");
+    return res.redirect("/account/login");
+  }
+};
+
+/* ****************************************
  * Middleware to check Admin or Employee account type
+ * ✅ FIXED: Added else block to handle missing JWT token
  **************************************** */
 const isEmployeeOrAdmin = (req, res, next) => {
   if (req.cookies.jwt) {
@@ -213,7 +226,7 @@ const isEmployeeOrAdmin = (req, res, next) => {
       process.env.ACCESS_TOKEN_SECRET,
       (err, accountData) => {
         if (err) {
-          req.flash('Please log in');
+          req.flash('notice', 'Please log in');
           res.clearCookie('jwt');
           return res.redirect('/account/login');
         }
@@ -229,6 +242,10 @@ const isEmployeeOrAdmin = (req, res, next) => {
         }
       }
     );
+  } else {
+    // ✅ FIX: Handle case when no JWT token exists
+    req.flash('notice', 'Please log in to access this page.');
+    return res.redirect('/account/login');
   }
 };
 
@@ -249,6 +266,5 @@ module.exports = {
   buildDeleteInventoryGrid,
   isEmployeeOrAdmin,
   buildEditAccountGrid,
-  handleErrors,
-  checkJWTToken,
+  checkLogin, 
 };

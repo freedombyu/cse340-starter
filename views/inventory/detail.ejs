@@ -1,0 +1,90 @@
+<% if (title) { %>
+  <h1><%= title %></h1>
+<% } else { res.redirect('/') } %>
+
+<%- messages() %>
+
+<!-- Vehicle Details Display -->
+<% if (vehicle) { %>
+<div id="vehicle-detail">
+  <img src="<%= vehicle.inv_image %>" alt="<%= vehicle.inv_make %> <%= vehicle.inv_model %>">
+  <div class="vehicle-info">
+    <h2><%= vehicle.inv_year %> <%= vehicle.inv_make %> <%= vehicle.inv_model %></h2>
+    <p class="price">Price: $<%= new Intl.NumberFormat('en-US').format(vehicle.inv_price) %></p>
+    <p class="description"><%= vehicle.inv_description %></p>
+    <ul class="vehicle-specs">
+      <li><strong>Color:</strong> <%= vehicle.inv_color %></li>
+      <li><strong>Miles:</strong> <%= new Intl.NumberFormat('en-US').format(vehicle.inv_miles) %></li>
+    </ul>
+  </div>
+</div>
+<% } %>
+
+<!-- Reviews Section -->
+<section class="reviews-section">
+  <div class="reviews-header">
+    <h2>Customer Reviews</h2>
+    <% if (typeof avgRating !== 'undefined' && reviewCount > 0) { %>
+      <div class="rating-summary">
+        <span class="avg-rating"><%= avgRating %></span>
+        <span class="stars">
+          <% const fullStars = Math.floor(avgRating); %>
+          <% for(let i = 0; i < fullStars; i++) { %>★<% } %>
+          <% for(let i = fullStars; i < 5; i++) { %>☆<% } %>
+        </span>
+        <span class="review-count">(<%= reviewCount %> review<%= reviewCount !== 1 ? 's' : '' %>)</span>
+      </div>
+    <% } %>
+  </div>
+
+  <% if (locals.accountData) { %>
+    <div class="add-review-link">
+      <a href="/reviews/add/<%= vehicle.inv_id %>" class="btn-add-review">Write a Review</a>
+    </div>
+  <% } else { %>
+    <p class="login-prompt">
+      <a href="/account/login">Log in</a> to write a review
+    </p>
+  <% } %>
+
+  <% if (typeof reviews !== 'undefined' && reviews.length > 0) { %>
+    <div class="reviews-list">
+      <% reviews.forEach(review => { %>
+        <article class="review-card">
+          <header class="review-header">
+            <div class="review-meta">
+              <span class="review-rating">
+                <% for(let i = 0; i < review.review_rating; i++) { %>★<% } %>
+                <% for(let i = review.review_rating; i < 5; i++) { %>☆<% } %>
+              </span>
+              <span class="review-author">
+                by <%= review.account_firstname %> <%= review.account_lastname.charAt(0) %>.
+              </span>
+              <span class="review-date">
+                <%= new Date(review.review_date).toLocaleDateString('en-US', { 
+                  year: 'numeric', 
+                  month: 'long', 
+                  day: 'numeric' 
+                }) %>
+              </span>
+            </div>
+          </header>
+          
+          <div class="review-body">
+            <p><%= review.review_text %></p>
+          </div>
+          
+          <% if (locals.accountData && locals.accountData.account_id === review.account_id) { %>
+            <footer class="review-actions">
+              <a href="/reviews/edit/<%= review.review_id %>" class="edit-link">Edit</a>
+              <a href="/reviews/delete/<%= review.review_id %>" class="delete-link"
+                 onclick="return confirm('Are you sure you want to delete this review?')">Delete</a>
+            </footer>
+          <% } %>
+        </article>
+      <% }) %>
+    </div>
+  <% } else { %>
+    <p class="no-reviews">No reviews yet. Be the first to review this vehicle!</p>
+  <% } %>
+</section>

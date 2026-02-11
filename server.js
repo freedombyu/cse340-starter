@@ -10,6 +10,7 @@ const express = require('express');
 const expressLayouts = require('express-ejs-layouts');
 const session = require('express-session');
 const bodyParser = require('body-parser');
+const reviewRouter = require('./routes/reviewRoute');
 const cookieParser = require('cookie-parser');
 const app = express();
 const pool = require('./database/');
@@ -68,6 +69,8 @@ app.use('/inv', inventoryRouter);
 app.use('/server-error', serverErrorRouter);
 // Account Routes
 app.use('/account', accountRouter);
+// Review Routes
+app.use('/reviews', reviewRouter);
 
 /* ***********************
  * Route Not Found

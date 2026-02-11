@@ -1,4 +1,6 @@
 const { createClassification, createInventory } = require('../models/inventory-model');
+const invModel = require('../models/inventory-model');
+const reviewModel = require('../models/review-model');
 const {
   getNav,
   buildClassificationGrid,
@@ -22,19 +24,61 @@ const buildByClassificationId = async (req, res, next) => {
   });
 };
 
+// ✅ FIXED - This should render to detail.ejs, not management.ejs
 const buildByInventoryId = async (req, res, next) => {
   const invId = req.params.invId;
-  const { grid, title } = await buildInventoryGrid(invId);
+  const { grid, title, vehicle } = await buildInventoryGrid(invId);
   const nav = await getNav();
 
-  res.render('./inventory/inventory', {
+  // Fetch reviews
+  const reviews = await reviewModel.getReviewsByInventoryId(invId);
+  const ratingData = await reviewModel.getAverageRating(invId);
+
+  res.render('./inventory/detail', {  // ✅ CHANGED from 'management' to 'detail'
     title,
     grid,
     nav,
+    vehicle,
+    reviews,
+    avgRating: parseFloat(ratingData.avg_rating),
+    reviewCount: parseInt(ratingData.review_count),
     errors: null,
   });
 };
 
+const buildVehicleDetail = async (req, res, next) => {
+  const inv_id = parseInt(req.params.inv_id);
+  const nav = await getNav();
+  
+  try {
+    const vehicle = await invModel.getDetailsByInventoryId(inv_id);
+    
+    if (!vehicle) {
+      req.flash('notice', 'Vehicle not found');
+      return res.redirect('/inv');
+    }
+    
+    // Get reviews for this vehicle
+    const reviews = await reviewModel.getReviewsByInventoryId(inv_id);
+    
+    // Get average rating
+    const ratingData = await reviewModel.getAverageRating(inv_id);
+    
+    res.render('inventory/detail', {
+      title: `${vehicle.inv_year} ${vehicle.inv_make} ${vehicle.inv_model}`,
+      nav,
+      vehicle,
+      reviews,
+      avgRating: ratingData.avg_rating,
+      reviewCount: ratingData.review_count,
+      errors: null,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// ✅ OPTIMIZED - Management page now loads faster
 const buildManagement = async (req, res, next) => {
   const { grid, title, clasOptions } = await buildManagementGrid();
   const nav = await getNav();
@@ -101,7 +145,6 @@ const buildAddInventory = async (req, res, next) => {
   });
 };
 
-// ADD OR REPLACE THIS FUNCTION HERE
 const addInventory = async (req, res) => {
   const {
     inv_make,
@@ -144,7 +187,7 @@ const addInventory = async (req, res) => {
     req.flash('notice', `Error adding vehicle "${inv_make} ${inv_model}"`);
     const nav = await getNav();
     const clasOptions = await buildClassificationList();
-    const formData = req.body; // Pass back the form data
+    const formData = req.body;
     const formAction = '/inv/inventory';
     res.render('./inventory/add-inventory', {
       title: 'Add New Vehicle',
@@ -160,6 +203,7 @@ const addInventory = async (req, res) => {
 module.exports = {
   buildByClassificationId,
   buildByInventoryId,
+  buildVehicleDetail,
   buildManagement,
   buildAddClass,
   addClassification,

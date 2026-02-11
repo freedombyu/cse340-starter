@@ -15,7 +15,7 @@ const getInventoryByClassificationId = async (clasId) => {
     return rows;
   } catch (error) {
     console.error('getInventoryByClassificationId error', error);
-    return []; // Return empty array on error
+    return [];
   }
 };
 
@@ -28,7 +28,7 @@ const getDetailsByInventoryId = async (invId) => {
     return rows[0];
   } catch (error) {
     console.error('getDetailsByInventoryId error', error);
-    return null; // Return null on error
+    return null;
   }
 };
 
@@ -54,7 +54,53 @@ const getReviewsByInventoryId = async (invId) => {
     return rows;
   } catch (error) {
     console.error('getReviewsByInventoryId error', error);
-    return []; // Return empty array on error
+    return [];
+  }
+};
+
+// ✅ NEW - Optimized query for management page (only gets what's needed)
+const getInventoryForManagement = async () => {
+  try {
+    const { rows } = await pool.query(
+      `SELECT 
+        i.inv_id, 
+        i.inv_make, 
+        i.inv_model, 
+        i.inv_year,
+        i.inv_price,
+        c.classification_name
+       FROM inventory AS i 
+       JOIN classification AS c ON i.classification_id = c.classification_id 
+       ORDER BY c.classification_name, i.inv_make, i.inv_model
+       LIMIT 100`  // Limit to prevent slow loads
+    );
+    return rows;
+  } catch (error) {
+    console.error('getInventoryForManagement error', error);
+    return [];
+  }
+};
+
+// ✅ NEW - Get inventory by classification for dropdown filtering
+const getInventoryByClassificationForManagement = async (clasId) => {
+  try {
+    const { rows } = await pool.query(
+      `SELECT 
+        i.inv_id, 
+        i.inv_make, 
+        i.inv_model, 
+        i.inv_year,
+        c.classification_name
+       FROM inventory AS i 
+       JOIN classification AS c ON i.classification_id = c.classification_id 
+       WHERE i.classification_id = $1
+       ORDER BY i.inv_make, i.inv_model`,
+      [clasId]
+    );
+    return rows;
+  } catch (error) {
+    console.error('getInventoryByClassificationForManagement error', error);
+    return [];
   }
 };
 
@@ -123,4 +169,6 @@ module.exports = {
   getReviewsByInventoryId,
   createClassification,
   createInventory,
+  getInventoryForManagement,  
+  getInventoryByClassificationForManagement,  
 };

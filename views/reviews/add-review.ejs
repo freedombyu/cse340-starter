@@ -1,0 +1,52 @@
+<% if (title) { %>
+  <h1><%= title %></h1>
+<% } else { res.redirect('/') } %>
+
+<div class="review-container">
+  <div class="vehicle-summary">
+    <img src="<%= vehicle.inv_thumbnail %>" alt="<%= vehicle.inv_make %> <%= vehicle.inv_model %>">
+    <h2><%= vehicle.inv_year %> <%= vehicle.inv_make %> <%= vehicle.inv_model %></h2>
+  </div>
+
+  <%- messages() %>
+
+  <% if (errors) { %>
+    <ul class="notice">
+      <% errors.forEach(error => { %>
+        <li><%= error.msg %></li>
+      <% }) %>
+    </ul>
+  <% } %>
+
+  <form action="/reviews/add" method="POST" class="review-form">
+    <input type="hidden" name="inv_id" value="<%= vehicle.inv_id %>">
+    
+    <fieldset>
+      <legend>Write Your Review</legend>
+      
+      <label for="rating">Rating *</label>
+      <select name="rating" id="rating" required>
+        <option value="">-- Select Rating --</option>
+        <option value="5" <%= rating == 5 ? 'selected' : '' %>>★★★★★ Excellent</option>
+        <option value="4" <%= rating == 4 ? 'selected' : '' %>>★★★★☆ Very Good</option>
+        <option value="3" <%= rating == 3 ? 'selected' : '' %>>★★★☆☆ Good</option>
+        <option value="2" <%= rating == 2 ? 'selected' : '' %>>★★☆☆☆ Fair</option>
+        <option value="1" <%= rating == 1 ? 'selected' : '' %>>★☆☆☆☆ Poor</option>
+      </select>
+
+      <label for="review_text">Your Review * (10-1000 characters)</label>
+      <textarea 
+        name="review_text" 
+        id="review_text" 
+        rows="8" 
+        required
+        placeholder="Share your experience with this vehicle..."
+      ><%= review_text %></textarea>
+      
+      <div class="form-actions">
+        <input type="submit" value="Submit Review" class="submit-btn">
+        <a href="/inv/detail/<%= vehicle.inv_id %>" class="cancel-btn">Cancel</a>
+      </div>
+    </fieldset>
+  </form>
+</div>
